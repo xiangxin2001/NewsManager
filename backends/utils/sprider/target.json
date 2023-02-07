@@ -6,5 +6,13 @@
             "example":"http://{}.people.com.cn/",
             "categroy":"finance,cpc,society,ent,health,world,military"
         }
+    ],
+    "test":[
+        {
+            "url":"https://www.sinovision.net",
+            "name":"美国中文网",
+            "example":"https://www.sinovision.net/portal.php?mod=center&cate={}",
+            "categroy":"caijing,yule"
+        }
     ]
 }
