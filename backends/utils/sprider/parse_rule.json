@@ -1,0 +1,4 @@
+{
+    "美国中文网":"<div class=\"mtitle item_div\"><a href=\"//(.*?)\" title=\"(.*?)\" target=\"_blank\">.*?</a></div>"
+}
+
