@@ -1,4 +1,8 @@
 {
-    "美国中文网":"<div class=\"mtitle item_div\"><a href=\"//(.*?)\" title=\"(.*?)\" target=\"_blank\">.*?</a></div>"
+    "美国中文网":{
+        "re":"<div class=\"mtitle item_div\"><a href=\"//(.*?)\" title=\"(.*?)\" target=\"_blank\">.*?</a></div>",
+        "xpath":"//*[@id=\"ct\"]/div[1]/div[2]/div[5]/table"
+        
+    }
 }
 
