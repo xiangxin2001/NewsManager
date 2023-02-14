@@ -1,4 +1,3 @@
-
 import requests
 import json
 import time
@@ -22,26 +21,26 @@ class Web_Sprider:
         self.dataset={}
 
     def main(self) -> None:
-        # self.get_news_list()
+        self.get_news_list()
         #获取解析规则
         with open(BASE_DIR/"parse_rule.json","r",encoding="utf-8") as f:
             parse_rule_dict=json.load(f)
             re_rule=parse_rule_dict[self.name]["re"]
             xpath=parse_rule_dict[self.name]["xpath"]
             # print(parse_rule_dict[self.name]["re"])
-        # if self.parse_news_list(rule=re_rule):
-        #     self.get_news_detail()
-        #     self.save()
+        if self.parse_news_list(rule=re_rule):
+            self.get_news_detail()
+            self.save()
         self.parse_news_detail(xpath=xpath)
         
     #解析网页获取新闻列表    
     def parse_news_list(self,rule:str)->bool:
         self.news_list_dict={}
-        dataset={}
-        with open(BASE_DIR/"test.json","r",encoding="utf-8") as f:
-            dataset=json.load(f)
+        # dataset={}
+        # with open(BASE_DIR/"test.json","r",encoding="utf-8") as f:
+        #     dataset=json.load(f)
         for keyword in self.categroy_list:
-            parser=Html_parser_re(data=dataset[keyword],rule=rule)
+            parser=Html_parser_re(data=self.dataset[keyword],rule=rule)
             news_list=parser.main()
             if news_list:
                 self.news_list_dict[keyword]=news_list
@@ -66,24 +65,25 @@ class Web_Sprider:
     #解析网页获取新闻
     def parse_news_detail(self,xpath:str)->bool:
         news={"title":[],"category":[],"passage":[],"url":[]}
-        news_detail_dict={}
-        with open(BASE_DIR/"data.json","r",encoding="utf-8") as f:
-            dict=json.load(f)
-            news_detail_dict=dict["news_detail_dict"]
+        # news_detail_dict={}
+        # with open(BASE_DIR/"data.json","r",encoding="utf-8") as f:
+        #     dict=json.load(f)
+        #     news_detail_dict=dict["news_detail_dict"]
         for keyword in self.categroy_list:
-            for news_detail in news_detail_dict[keyword]:
+            for news_detail in self.news_detail_dict[keyword]:
                 parser=Html_parser_xpath(data=news_detail['data'],xpath=xpath)
                 passage=parser.main()
                 if passage is not None:
                     news["title"].append(news_detail["title"])
-                    news["category"].append(keyword.index)
+                    news["category"].append(self.categroy_list.index(keyword))
                     news["passage"].append(passage)
                     news["url"].append(news_detail["url"])
+                    print("解析成功！")
                 else:
                     print("出错！请检查解析规则或数据")
         import pandas
         news_csv=pandas.DataFrame(news,columns=["title","category","passage","url"])
-        news_csv.to_csv("news.csv",index=True,encoding='utf-8')
+        news_csv.to_csv(BASE_DIR/"news.csv",index=True,encoding='utf-8')
         return True
 
     #爬取新闻详情页
@@ -154,15 +154,18 @@ class Html_parser_xpath:
         passage = tostring(passage_xpath[0],encoding="utf-8").decode("utf-8") if passage_xpath  else None
         return passage
 
-def main():
+class main:
+    #主程序
+    def main(self):
     #从本地获取目标列表
-    target_list={}
-    with open(BASE_DIR/"target.json","r",encoding="utf-8") as f:
-        target_list=json.load(f)
-        target_list=target_list["test"]
-    if target_list:
-        for target in target_list:
-            web_sprider=Web_Sprider(url=target["url"],name=target["name"],example=target["example"],categroy=target["categroy"])
-            web_sprider.main()
+        target_list={}
+        with open(BASE_DIR/"target.json","r",encoding="utf-8") as f:
+            target_list=json.load(f)
+            target_list=target_list["test"]
+        if target_list:
+            for target in target_list:
+                web_sprider=Web_Sprider(url=target["url"],name=target["name"],example=target["example"],categroy=target["categroy"])
+                web_sprider.main()
 
-main()
+# test=main()
+# test.main()
