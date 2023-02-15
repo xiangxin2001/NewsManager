@@ -1,8 +1,16 @@
 {
     "美国中文网":{
         "re":"<div class=\"mtitle item_div\"><a href=\"//(.*?)\" title=\"(.*?)\" target=\"_blank\">.*?</a></div>",
-        "xpath":"//*[@id=\"ct\"]/div[1]/div[2]/div[5]/table"
+        "xpath":"//*[@id=\"article_content\"]/div"
         
+    },
+    "中国新闻网":{
+        "re":"<li class=\"ml20\"><a href=\"//(.*?)\"><img src=\"//.*?\"><div class=\"title\">(.*?)</div></a><div class=\"txt\"><span>.*?</span></div></li>",
+        "xpath":"//*[@id=\"cont_1_1_2\"]/div[2]/div[4]/div[2]/p"
+    },
+    "人民网":{
+        "re":"<li><a href=\"(.*?)\" target=\"_blank\">(.*?)</a></li>",
+        "xpath":"/html/body/div[1]/div[7]/div[1]/div[3]/p"
     }
 }
 

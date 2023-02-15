@@ -8,8 +8,8 @@ BASE_DIR = Path(__file__).resolve().parent
 
 #定义爬虫类
 class Web_Sprider:
-    def __init__(self,url:str,name:str,example:str,categroy:str) -> None:
-        self.url,self.name,self.example,self.categroy = url,name,example,categroy
+    def __init__(self,url:str,name:str,example:str,categroy:str,categroy_num_list:list) -> None:
+        self.url,self.name,self.example,self.categroy_num_list = url,name,example,categroy_num_list
         #设置请求头
         self.headers = {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -17,7 +17,7 @@ class Web_Sprider:
             "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36 Edg/109.0.1518.78"
         }
-        self.categroy_list=self.categroy.split(",")
+        self.categroy_list=categroy.split(",")
         self.dataset={}
 
     def main(self) -> None:
@@ -64,7 +64,7 @@ class Web_Sprider:
                 break
     #解析网页获取新闻
     def parse_news_detail(self,xpath:str)->bool:
-        news={"title":[],"category":[],"passage":[],"url":[]}
+        news={"title":[],"category":[],"passage":[],"news_from":[],"url":[]}
         # news_detail_dict={}
         # with open(BASE_DIR/"data.json","r",encoding="utf-8") as f:
         #     dict=json.load(f)
@@ -75,8 +75,9 @@ class Web_Sprider:
                 passage=parser.main()
                 if passage is not None:
                     news["title"].append(news_detail["title"])
-                    news["category"].append(self.categroy_list.index(keyword))
+                    news["category"].append(self.categroy_num_list[self.categroy_list.index(keyword)])
                     news["passage"].append(passage)
+                    news["news_from"].append(self.name)
                     news["url"].append(news_detail["url"])
                     print("解析成功！")
                 else:
@@ -95,7 +96,11 @@ class Web_Sprider:
                 url=item['url']
                 title=item['title']
                 print("-----正在爬取网页{}-----".format(url))
-                data=requests.get(url="http://{}".format(url),headers=self.headers).content.decode("utf-8")
+                data:str
+                if self.name=="人民网":
+                    data=requests.get(url="http://{a}.people.com.cn{b}".format(a=keyword,b=url),headers=self.headers).content.decode("utf-8")
+                else:
+                    data=requests.get(url="http://{}".format(url),headers=self.headers).content.decode("utf-8")
                 if data:
                     print("-----网页{}爬取成功-----".format(url))
                     news_detail_list.append({"url":url,"title":title,"data":data})
@@ -150,8 +155,11 @@ class Html_parser_xpath:
         from lxml import etree
         from xml.etree.ElementTree import tostring
         html=etree.HTML(self.data)
+        passage:str
         passage_xpath=html.xpath(self.xpath)
-        passage = tostring(passage_xpath[0],encoding="utf-8").decode("utf-8") if passage_xpath  else None
+        if passage_xpath:
+            for passage_piece in passage_xpath:
+                passage += tostring(passage_piece,encoding="utf-8").decode("utf-8")
         return passage
 
 class main:
@@ -164,7 +172,7 @@ class main:
             target_list=target_list["test"]
         if target_list:
             for target in target_list:
-                web_sprider=Web_Sprider(url=target["url"],name=target["name"],example=target["example"],categroy=target["categroy"])
+                web_sprider=Web_Sprider(url=target["url"],name=target["name"],example=target["example"],categroy=target["categroy"],categroy_num_list=target["categroy_num_list"])
                 web_sprider.main()
 
 # test=main()

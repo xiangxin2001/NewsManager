@@ -4,7 +4,23 @@
             "url":"http://www.people.com.cn/",
             "name":"人民网",
             "example":"http://{}.people.com.cn/",
-            "categroy":"finance,cpc,society,ent,health,world,military"
+            "categroy":"finance,society,health,military,world",
+            "categroy_num_list":[2,3,6,7,8]
+        },
+        {
+            "url":"https://www.sinovision.net",
+            "name":"美国中文网",
+            "example":"https://www.sinovision.net/portal.php?mod=center&cate={}",
+            "categroy":"political,caijing,shehui,yule,tiyu",
+            "categroy_num_list":[1,2,3,4,5]
+        },
+        {
+            "url":"https://www.chinanews.com",
+            "name":"中国新闻网",
+            "example":"https://www.chinanews.com/{}}/",
+            "categroy":"china,world,society,finance,wy,sports",
+            "categroy_num_list":[1,8,3,2,4,5]
+
         }
     ],
     "test":[
@@ -12,7 +28,8 @@
             "url":"https://www.sinovision.net",
             "name":"美国中文网",
             "example":"https://www.sinovision.net/portal.php?mod=center&cate={}",
-            "categroy":"caijing,yule"
+            "categroy":"political,caijing,shehui,yule,tiyu",
+            "categroy_num_list":[1,2,3,4,5]
         }
     ]
 }
