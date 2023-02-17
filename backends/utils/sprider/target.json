@@ -8,16 +8,16 @@
             "categroy_num_list":[2,3,6,7,8]
         },
         {
-            "url":"https://www.sinovision.net",
+            "url":"http://www.sinovision.net",
             "name":"美国中文网",
-            "example":"https://www.sinovision.net/portal.php?mod=center&cate={}",
+            "example":"http://www.sinovision.net/portal.php?mod=center&cate={}",
             "categroy":"political,caijing,shehui,yule,tiyu",
             "categroy_num_list":[1,2,3,4,5]
         },
         {
-            "url":"https://www.chinanews.com",
+            "url":"http://www.chinanews.com",
             "name":"中国新闻网",
-            "example":"https://www.chinanews.com/{}}/",
+            "example":"http://www.chinanews.com/{}}/",
             "categroy":"china,world,society,finance,wy,sports",
             "categroy_num_list":[1,8,3,2,4,5]
 
