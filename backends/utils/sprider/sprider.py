@@ -27,29 +27,30 @@ class Web_Sprider:
         #获取解析规则
         with open(BASE_DIR/"parse_rule.json","r",encoding="utf-8") as f:
             parse_rule_dict=json.load(f)
-            re_rule_list=parse_rule_dict[self.name]["re"]
-            xpath=parse_rule_dict[self.name]["xpath"]
-            # print(parse_rule_dict[self.name]["re"])
-        self.parse_news_list(rule_list=re_rule_list)
+            re_rule_dict=parse_rule_dict[self.name]["re"]
+            xpath_dict=parse_rule_dict[self.name]["xpath"]
+            
+        self.parse_news_list(rule_dict=re_rule_dict)
         if self.news_list_dict is not None:
             self.get_news_detail()
             
             if self.news_detail_dict is not None:
                 self.save()
-                self.parse_news_detail(xpath=xpath)
+                self.parse_news_detail(xpath_dict=xpath_dict)
             else:
                 print("news_detail_dict为空，请检查")
         else:
             print("news_list_dict为空，请检查")
         
     #解析网页获取新闻列表    
-    def parse_news_list(self,rule_list:list)->None:
+    def parse_news_list(self,rule_dict:dict)->None:
         self.news_list_dict={}
         # dataset={}
         # with open(BASE_DIR/"{}_data.json".format(self.name),"r",encoding="utf-8") as f:
         #     dataset=json.load(f)
         #     # dataset=dataset["dataset"]
         for keyword in self.categroy_list:
+            rule_list=rule_dict[keyword]
             parser=Html_parser_re(data=self.dataset[keyword],rule_list=rule_list)
             news_list=parser.main()
             self.news_list_dict[keyword]=news_list
@@ -64,7 +65,7 @@ class Web_Sprider:
             flag=True
             try:
                 print("-----正在爬取网页{}-----".format(self.example.format(keyword)))
-                data=requests.get(url=self.example.format(keyword),headers=self.headers).content
+                data=requests.get(url=self.example.format(keyword),headers=self.headers,timeout=20).content
             except Exception as e:
                 print(str(e))
                 flag=False
@@ -79,13 +80,13 @@ class Web_Sprider:
                 if data:
                     print("-----网页{}爬取成功-----".format(self.example.format(keyword)))
                     self.dataset[keyword]=data
-                    time.sleep(random.uniform(1.2,2.0))
+                    # time.sleep(random.uniform(1.2,2.0))
             else:
                 self.dataset[keyword]=""
                 print("-----网页爬取失败-----")
                 
     #解析网页获取新闻
-    def parse_news_detail(self,xpath:str)->bool:
+    def parse_news_detail(self,xpath_dict:dict)->bool:
         news={"title":[],"category":[],"passage":[],"news_from":[],"url":[]}
         # news_detail_dict={}
         # with open(BASE_DIR/"{}_data.json".format(self.name),"r",encoding="utf-8") as f:
@@ -93,6 +94,7 @@ class Web_Sprider:
         #     news_detail_dict=dict["news_detail_dict"]
         for keyword in self.categroy_list:
             for news_detail in self.news_detail_dict[keyword]:
+                xpath=xpath_dict[keyword]
                 parser=Html_parser_xpath(data=news_detail['data'],xpath=xpath)
                 passage=parser.main()
                 if passage is not None:
@@ -122,19 +124,24 @@ class Web_Sprider:
                 data:object
                 import re
                 try:
-                    if re.match(r"http://.*?",url) is not None:
+                    if re.match(r"http.*://.*?",url) is not None:
                         print("原生")
-                        data=requests.get(url=url,headers=self.headers).content
+                        data=requests.get(url=url,headers=self.headers,timeout=20).content
                     else:
                         if self.name=="人民网":
                             url="http://{}.people.com.cn{}".format(keyword,url)
                             print("人民网{}".format(url))
                             
-                            data=requests.get(url=url,headers=self.headers).content
+                            data=requests.get(url=url,headers=self.headers,timeout=20).content
+                        elif url[0]=='/':
+                            url="{}{}".format(self.url,url)
+                            print("后{}".format(url))
+                            
+                            data=requests.get(url=url,headers=self.headers,timeout=20).content
                         else:
                             url="http://{}".format(url)
                             print("其他{}".format(url))
-                            data=requests.get(url=url,headers=self.headers).content
+                            data=requests.get(url=url,headers=self.headers,timeout=20).content
                     
                 except Exception as e:
                     print(str(e))
@@ -150,7 +157,7 @@ class Web_Sprider:
                         news_detail_list.append({"url":url,"title":title,"data":data})
                         #实验性删除
                         del item
-                        time.sleep(random.uniform(0.5,1.2))
+                        # time.sleep(random.uniform(1.5,3.0))
                 else:
                         print("-----网页爬取失败-----")
             self.news_detail_dict[keyword]=news_detail_list
@@ -180,7 +187,7 @@ class Html_parser_re:
         for rule in self.rule_list:
             
             r= re.compile(rule)
-            result_list=r.findall(self.data)
+            result_list=r.findall(self.data,re.S)
             
             if result_list:
                 for news in result_list:
@@ -191,7 +198,8 @@ class Html_parser_re:
                 self.data=re.sub(rule,"",self.data,flags=re.S)
         
             else:
-                print("正则匹配查找失败，请检查解析规则或数据")
+                print("正则匹配查找失败，请检查解析规则或数据\n{}\n{}".format(type(rule),rule))
+
         return news_list
 
 #使用XPath解析网页

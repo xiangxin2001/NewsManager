@@ -17,7 +17,7 @@
         {
             "url":"http://www.chinanews.com",
             "name":"中国新闻网",
-            "example":"http://www.chinanews.com/{}}/",
+            "example":"http://www.chinanews.com/{}/",
             "categroy":"china,world,society,finance,wy,sports",
             "categroy_num_list":[1,8,3,2,4,5]
 
@@ -25,11 +25,12 @@
     ],
     "test":[
         {
-            "url":"https://www.sinovision.net",
-            "name":"美国中文网",
-            "example":"https://www.sinovision.net/portal.php?mod=center&cate={}",
-            "categroy":"political,caijing,shehui,yule,tiyu",
-            "categroy_num_list":[1,2,3,4,5]
+            "url":"http://www.chinanews.com",
+            "name":"中国新闻网",
+            "example":"http://www.chinanews.com/{}/",
+            "categroy":"china",
+            "categroy_num_list":[1,8,3,2,4,5]
+
         }
     ]
 }

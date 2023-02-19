@@ -1,17 +1,75 @@
 {
     "美国中文网":{
-        "re":["<div class=\"mtitle item_div\"><a href=\"//(.*?)\" title=\"(.*?)\" target=\"_blank\">.*?</a></div>"],
-        "xpath":"//*[@id=\"article_content\"]/div"
+        "re":{
+            "political":["<div class=\"mtitle item_div\"><a href=\"//(.*?)\" title=\"(.*?)\" target=\"_blank\">.*?</a></div>"],
+            "caijing":["<div class=\"mtitle item_div\"><a href=\"//(.*?)\" title=\"(.*?)\" target=\"_blank\">.*?</a></div>"],
+            "shehui":["<div class=\"mtitle item_div\"><a href=\"//(.*?)\" title=\"(.*?)\" target=\"_blank\">.*?</a></div>"],
+            "yule":["<div class=\"mtitle item_div\"><a href=\"//(.*?)\" title=\"(.*?)\" target=\"_blank\">.*?</a></div>"],
+            "tiyu":["<div class=\"mtitle item_div\"><a href=\"//(.*?)\" title=\"(.*?)\" target=\"_blank\">.*?</a></div>"]
+        },
+        "xpath":{
+            "political":"//*[@id=\"article_content\"]",
+            "caijing":"//*[@id=\"article_content\"]",
+            "shehui":"//*[@id=\"article_content\"]",
+            "yule":"//*[@id=\"article_content\"]",
+            "tiyu":"//*[@id=\"article_content\"]"
+        }
         
     },
     "中国新闻网":{
-        "re":["<li class=\"ml20\"><a href=\"//(.*?)\"><img src=\"//.*?\"><div class=\"title\">(.*?)</div></a><div class=\"txt\"><span>.*?</span></div></li>"],
-        "xpath":"//*[@id=\"cont_1_1_2\"]/div[2]/div[4]/div[2]/p"
+        "re":{
+            "china":["<div class=\"topnews-txt\"><a href=\"//(.*?)\"><p>(.*?)</p></a></div>",
+            "<a href=\"(.*?)\">\n            <img .*?>\n            <img .*?>\n            <p class=\"title\">(.*?)</p>",
+            "<a href=\"(.*?)\"><div class=\"layer\">\n                  <p class=\"p1\">(.*?)</p>",
+            "<li><a href=\"(.*?)\" target=\"_blank\" title=\"(.*?)\">"],
+            "world":["<a href=\"(.*?)\">\n            <img .*?>\n            <img .*?>\n            <p class=\"title\">(.*?)</p>",
+            "<a href=\"(.*?)\"><div class=\"layer\">\n                  <p class=\"p1\">(.*?)</p>",
+            "<li><a href=\"(.*?)\" target=\"_blank\" title=\"(.*?)\">"],
+            "society":["<a href=\"(.*?)\">\n            <img .*?>\n            <img .*?>\n            <p class=\"title\">(.*?)</p>",
+            "<a href=\"(.*?)\"><div class=\"layer\">\n                  <p class=\"p1\">(.*?)</p>",
+            "<li><a href=\"(.*?)\" target=\"_blank\" title=\"(.*?)\">"],
+            "finance":["<div class=\"title\"><a href=\"(.*?)\">(.*?)</a></div>",
+            "<a href=\"(.*?)\"><img .*?><div class=\"title\">(.*?)</div></a>",
+            "<li><a href=\"(.*?)\" target=\"_blank\" title=\"(.*?)\">"],
+            "wy":["<div class=\"title\"><a href=\"(.*?)\">(.*?)</a></div>",
+            "<a href=\"(.*?)\">\n            <img .*?>\n            <img .*?>\n            <p class=\"title\">(.*?)</p>",
+            "<a href=\"(.*?)\"><div class=\"layer\">\n                  <p class=\"p1\">(.*?)</p>",
+            "<li><a href=\"(.*?)\" target=\"_blank\" title=\"(.*?)\">"],
+            "sports":["<div class=\"title\"><a href=\"(.*?)\">(.*?)</a></div>",
+            "<a href=\"(.*?)\">\n            <img .*?>\n            <img .*?>\n            <p class=\"title\">(.*?)</p>",
+            "<a href=\"(.*?)\"><div class=\"layer\">\n                  <p class=\"p1\">(.*?)</p>",
+            "<li><a href=\"(.*?)\" target=\"_blank\" title=\"(.*?)\">"]
+        },
+        "xpath":{
+            "china":"//*[@id=\"cont_1_1_2\"]/div[2]/div[4]/div[2]",
+            "world":"//*[@id=\"cont_1_1_2\"]/div[2]/div[4]/div[2]",
+            "society":"//*[@id=\"cont_1_1_2\"]/div[2]/div[4]/div[2]",
+            "finance":"//*[@id=\"cont_1_1_2\"]/div[2]/div[4]/div[2]",
+            "wy":"//*[@id=\"cont_1_1_2\"]/div[2]/div[4]/div[2]",
+            "sports":"//*[@id=\"cont_1_1_2\"]/div[2]/div[4]/div[2]"
+        }
     },
     "人民网":{
-        "re":["<li><a href=\"(.*?)\" target=\"_blank\"><img.*?></a><div.*?><a.*?>(.*?)</a.*?></div></li>",
-    "<li><a href='(.*?)' target=\"_blank\">(.*?)</a></li>"],
-        "xpath":"/html/body/div[1]/div[7]/div[1]/div[3]/p"
+        "re":{
+            "finance":["<li><a href=\"(.*?)\" target=\"_blank\"><img.*?></a><div.*?><a.*?>(.*?)</a.*?></div></li>",
+            "<li><a href='(.*?)' target=\"_blank\">(.*?)</a></li>"],
+            "society":["<li><a href=\"(.*?)\" target=\"_blank\"><img.*?></a><div.*?><a.*?>(.*?)</a.*?></div></li>",
+            "<li><a href='(.*?)' target=\"_blank\">(.*?)</a></li>"],
+            "health":["<div class=\"fp_item\"><a href=\"(.*?)\" target=\"_blank\"><img .*?/></a><div .*?><span>(.*?)</span></div></div>",
+            "<li><a href='(.*?)' target=\"_blank\">(.*?)</a></li>"],
+            "military":["<li><a href=\"(.*?)\" target=\"_blank\"><img.*?></a><div.*?><a.*?>(.*?)</a.*?></div></li>",
+            "<li><a href='(.*?)' target=\"_blank\">(.*?)</a></li>"],
+            "world":["<li><a href.*?><img src.*?/></a><div></div><span><a href=\"(.*?)\" target=\"_blank\">(.*?)</a></span></li>",
+            "<li><a href='(.*?)' target=\"_blank\"><b>(.*?)</b></a></li>",
+            "<li><a href='(.*?)' target=\"_blank\">(.*?)</a></li>"]
+        },
+        "xpath":{
+            "finance":"/html/body/div[1]/div[7]/div[1]/div[3]",
+            "society":"/html/body/div[1]/div[7]/div[1]/div[3]",
+            "health":"/html/body/div/div[4]/div/div/div[1]/div[2]/div[1]/div[3]",
+            "military":"/html/body/div[1]/div[6]/div[1]/div[3]",
+            "world":"/html/body/div[1]/div[7]/div[1]/div[3]"
+        }
     }
 }
 
