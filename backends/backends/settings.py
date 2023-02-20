@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'news',
     'apscheduler',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -194,3 +195,6 @@ SESSION_CACHE_ALIAS = "session"
 
 #CSRF settings
 CSRF_TRUSTED_ORIGINS = ["http://newsmanager.com:8080"]
+
+#用户 设置
+AUTH_USER_MODEL = 'user.User'
