@@ -97,7 +97,7 @@ class Web_Sprider:
                 xpath=xpath_dict[keyword]
                 parser=Html_parser_xpath(data=news_detail['data'],xpath=xpath)
                 passage=parser.main()
-                if passage is not None:
+                if passage is not None and len(passage)>20:
                     news["title"].append(news_detail["title"])
                     news["category"].append(self.categroy_num_list[self.categroy_list.index(keyword)])
                     news["passage"].append(passage)
@@ -208,7 +208,18 @@ class Html_parser_xpath:
         self.data,self.xpath=data,xpath
 
     def main(self) -> str:
+        self.data_clean()
         return self.parsing()
+
+    #清除js里的注释
+    def data_clean(self)->None:
+        import re
+        self.data = re.sub("<!--[\\s\\S]*?(?:-->)?","",self.data)
+        self.data = re.sub("<!--[\\s\\S]*?-->?","",self.data)
+        self.data = re.sub('<!---+>?','',self.data)
+        self.data = re.sub("|<!(?![dD][oO][cC][tT][yY][pP][eE]|\\[CDATA\\[)[^>]*>?","",self.data)
+        self.data = re.sub("|<[?][^>]*>?","",self.data)
+        
 
     def parsing(self) -> str:
         from lxml import etree
@@ -218,11 +229,15 @@ class Html_parser_xpath:
             html=etree.HTML(self.data)
             
             passage_xpath=html.xpath(self.xpath)
+            # print('Jieduan1')
             if passage_xpath:
+                # print('Jieduan2')
                 for passage_piece in passage_xpath:
                     passage_r += tostring(passage_piece,encoding="utf-8").decode("utf-8")
+                # print('jieduan3\n{}\n{}'.format('--------------------------------',passage_r))
         except Exception as e:
             print(str(e))
+   
         return passage_r
 
 class main:
