@@ -7,6 +7,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
+  
   "dependencies": {
     "core-js": "^3.8.3",
     "element-ui": "^2.4.5",
@@ -15,6 +16,8 @@
     "vuex": "^3.6.2"
   },
   "devDependencies": {
+    "@vue/runtime-dom": "latest",
+    "@volar-plugins/vetur": "latest",
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
     "@vue/cli-plugin-babel": "~5.0.0",
