@@ -21,6 +21,10 @@ class mobileCountAPI(APIView):
 
         count = User.objects.filter(mobile=mobile).count()
         return Response({'code':0,'count':count,'errmsg':'ok'})
+class emailCountAPI(APIView):
+    def get(self,request,email):
+        count = User.objects.filter(email=email).count()
+        return Response({'code':0,'count':count,'errmsg':'ok'})
 
 #新用户注册API
 class registerNewAPI(APIView):
@@ -28,24 +32,25 @@ class registerNewAPI(APIView):
         user=request.data
         username=user.get('username')
         password=user.get('password')
-        password2=user.get('password2')
+        checkPassword=user.get('checkPassword')
         email=user.get('email')
         mobile=user.get('mobile')
         allow=user.get('allow')
 
-        if not all([username,password,password2,mobile,allow]):
+        if not all([username,password,checkPassword,mobile,allow,email]):
+            print([username,password,checkPassword,mobile,allow,email])
             return Response({'code':400,'errmsg':'Incomplete parameters'})
 
-        if not re.match('[a-zA-Z0-9_-]{5,20}',username):
-            return Response({'code':400,'errmsg':'Incorrect user name'})
+        if not 1<=len(username)<=20:
+            return Response({'code':400,'errmsg':'Incorrect username length'})
         
-        if not password==password2:
+        if not password==checkPassword:
             return Response({'code':400,'errmsg':'Password error'})
 
         if not re.match('1[345789]\d{9}',mobile):
             return Response({'code':400,'errmsg':'Incorrect mobilephone number'})
 
-        if not 8<=len(password)<=20:
+        if not 6<=len(password)<=20:
             return Response({'code':400,'errmsg':'Incorrect password length'})
 
         if not allow:
@@ -145,10 +150,10 @@ class passwordChangeAPI(APIView):
         user.save()
         return Response({'code':0,'errmsg':'ok'}).delete_cookie('username')
 
-# name='xiangxin'
+# name='秋沐川'
 # if  not User.objects.filter(username=name):
-#     User.objects.create_superuser(username=name,password='lxb331047471a',email='2868308648@qq.com',mobile='15397008301')
+#     User.objects.create_superuser(username=name,password='lxb331047471a',email='2868308648@qq.com',mobile='15397008302')
 # else:
 #     User.objects.filter(username=name).delete()
-#     User.objects.create_superuser(username=name,password='lxb331047471a',email='2868308648@qq.com',mobile='15397008301')
+#     User.objects.create_superuser(username=name,password='lxb331047471a',email='2868308648@qq.com',mobile='15397008302')
 

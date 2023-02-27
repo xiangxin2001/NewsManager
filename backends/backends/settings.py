@@ -194,7 +194,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "session"
 
 #CSRF settings
-CSRF_TRUSTED_ORIGINS = ["http://newsmanager.com:8080"]
+CSRF_TRUSTED_ORIGINS = ["http://newsmanager.com:8080","http://127.0.0.1:8080"]
 
 #用户 设置
 AUTH_USER_MODEL = 'user.User'
