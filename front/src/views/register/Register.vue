@@ -1,15 +1,14 @@
 <template>
   <el-container>
-  <el-aside width="200px">Aside</el-aside>
+  <el-aside width="200px"><logo></logo></el-aside>
   <el-container>
-    <el-header>Header</el-header>
+    <el-header><myheader></myheader></el-header>
       <el-main>
         <span class="post"></span>
         <span class="register">
           <form_register/>
         </span>
       </el-main>
-    <el-footer>Footer</el-footer>
   </el-container>
 </el-container>
   
@@ -17,13 +16,14 @@
 </template>
 
 <script>
-import form_register from '@/components/Form_register.vue'
 
-
+import form_register from '@/views/register/Form_register.vue'
+import Logo from '@/components/Logo.vue'
+import MyHeader  from '@/components/MyHeader.vue';
 export default {
     name:"Register",
     components: {
-      form_register
+      form_register:form_register,logo:Logo,myheader:MyHeader
   }
 
 }

@@ -1,15 +1,16 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import app from '../App.vue'
+import Index from '@/views/index/Index.vue'
 import Register from '@/views/register/Register.vue'
 import NotFound from '@/views/notfound/NotFound.vue'
+import Login from '@/views/login/Login.vue'
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component:app
+    component:Index
   },
   {
     path:'/reg',
@@ -17,9 +18,14 @@ const routes = [
     component:Register
   },
   {
+    path:'/login',
+    name:'login',
+    component:Login
+  },
+  {
     path: '/*', 
     component: NotFound
-  },
+  }
 ]
 
 const router = new VueRouter({
