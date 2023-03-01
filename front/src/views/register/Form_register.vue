@@ -17,7 +17,7 @@
     <el-input v-model="ruleForm.email"></el-input>
   </el-form-item>
   <el-form-item prop="allow">
-  <el-checkbox v-model="ruleForm.allow">同意《新闻管理者（本站）的用户协议》</el-checkbox>
+  <el-checkbox v-model="ruleForm.allow">同意《纽斯新闻（本站）用户协议》</el-checkbox>
   </el-form-item>
   <el-form-item>
     <el-button class="submit_button" type="primary" @click="submitForm('ruleForm')">注册</el-button>
