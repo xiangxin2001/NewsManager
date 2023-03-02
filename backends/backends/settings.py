@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'news',
     'apscheduler',
     'user',
+    'sslserver',
 ]
 
 MIDDLEWARE = [
@@ -198,3 +199,10 @@ CSRF_TRUSTED_ORIGINS = ["http://newsmanager.com:8080","http://127.0.0.1:8080"]
 
 #用户 设置
 AUTH_USER_MODEL = 'user.User'
+
+# Cookie设置 跨域
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE="None"
+
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = "None"

@@ -6,5 +6,13 @@ module.exports = defineConfig({
   // transpileDependencies: true,
 
   // assetsDir: '/public'
+
+    devServer: {
+      allowedHosts: [
+        'newsmanager.com', 
+        'localhost',
+        '127.0.0.1'    
+      ],
+    },
   
 })

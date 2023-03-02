@@ -72,7 +72,7 @@
     },
     created(){
       var pathname=window.location.pathname;
-      console.log(pathname);
+      // console.log(pathname);
       if (pathname=="/reg"||pathname=="/reg#"){
          this.reg=true;
       }

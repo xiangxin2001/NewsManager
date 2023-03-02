@@ -72,7 +72,7 @@ class userloginAPI(APIView):
         data=request.data
         username=data.get('username')
         password=data.get('password')
-        remembered=data.get('remembered')
+        remember=data.get('remember')
 
         if not all([username,password]):
             return Response({'code':400,'errmsg':'Incomplete parameters'})
@@ -91,7 +91,7 @@ class userloginAPI(APIView):
 
         
         #是否登录保持
-        if remembered:
+        if remember:
             request.session.set_expiry(None)
         else:
             request.session.set_expiry(0)
@@ -107,7 +107,8 @@ class userloginAPI(APIView):
 
         #制作响应信息
         response=Response({'code':0,'errmsg':'ok'})
-        response.set_cookie('username',a.username)
+        username=a.username.encode(encoding='utf-8')
+        response.set_cookie('username',username,samesite="None",secure=True)
 
         return response
 

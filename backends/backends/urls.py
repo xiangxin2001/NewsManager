@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-
+from .views import get_tokenAPI
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('news/',include('news.urls')),
-    path('',include('user.urls'))
+    path('',include('user.urls')),
+    path('get_token',get_tokenAPI.as_view())
 ]

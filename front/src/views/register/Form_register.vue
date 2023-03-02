@@ -95,7 +95,6 @@ export default {
             var url ='/mobile/' + value + '/count/';
             this.axios.get(url, {
                 responseType: 'json',
-                withCredentials:true,
             }) 
             .then(response => {
               if (response.data.count > 0) {
@@ -190,6 +189,8 @@ export default {
                     .then(response => {
                         if (response.data.code==0) {
                            console.log('yeah')
+                           location.href = "/login";
+                           alert("注册成功！")
                         }
                         if (response.data.code == 400) {
                             alert(response.data.errmsg)
