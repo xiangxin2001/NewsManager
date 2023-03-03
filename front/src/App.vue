@@ -14,6 +14,7 @@ export default {
  
   },
   mounted(){
+    
     this.axios.get('/get_token', {
         responseType: 'json',
     })
@@ -24,6 +25,7 @@ export default {
     .catch(error => {
         console.log(error)
     })
+    
   }
 }
 </script>

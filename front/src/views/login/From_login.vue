@@ -82,7 +82,10 @@ submitForm(formName) {
 
                         if (response.data.code == 0) {
                             // 跳转页面
-                            location.href = "/";
+                            window.sessionStorage.setItem('username',response.data.username);
+                            this.$router.push({
+                              path:'/',
+                            });
                         } else if (response.data.code === 400) {
                             this.error_message = '用户名或密码错误';
                             this.alert_error();

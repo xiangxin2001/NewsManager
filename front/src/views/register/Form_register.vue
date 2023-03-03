@@ -189,8 +189,10 @@ export default {
                     .then(response => {
                         if (response.data.code==0) {
                            console.log('yeah')
-                           location.href = "/login";
                            alert("注册成功！")
+                           this.$router.push({
+                            path:'/login',
+                           });
                         }
                         if (response.data.code == 400) {
                             alert(response.data.errmsg)

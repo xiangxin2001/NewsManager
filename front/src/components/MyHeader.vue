@@ -44,6 +44,13 @@
       <el-menu-item index="4" ><a href="/reg" target="_self"><div>注册</div></a></el-menu-item>
       <el-menu-item index="5" ><a href="/login" target="_self"><div>登录</div></a></el-menu-item>
       </div>
+      <div class="right_header" v-show="logined" style="width: 100px;">
+      <el-submenu index="4">
+         <template slot="title"><div><i class="el-icon-user-solid" style="display: inline-block;"></i><span style="display: inline-block;">{{ username }}</span></div></template>
+            <el-menu-item index="4-1"><a href="#" target="_self"><div>用户中心</div></a></el-menu-item>
+            <el-menu-item index="4-2"><a href="#" target="_self" @click='logout'><div>退出登录</div></a></el-menu-item>
+      </el-submenu>
+      </div>
    </el-menu>
 <div class="line"></div>
 
@@ -60,7 +67,9 @@
         search_data:"",
         reg:false,
         login:false,
-        reg_and_login:false
+        reg_and_login:false,
+        logined:false,
+        username:"",
       };
     },
     
@@ -69,18 +78,75 @@
       handleSelect(key, keyPath) {
         console.log(key, keyPath);
       },
+      logout(){
+         this.axios.delete('/logout/',{
+            responseType:'json',
+         })
+         .then(res=>{
+            if(res.data.code==0){
+               console.log("55")
+               window.sessionStorage.removeItem('logined');
+               window.sessionStorage.removeItem('username');
+               this.username="";
+               this.logined=false;
+               this.reg_and_login=true;
+            }
+         })
+         .catch(err=>{
+            alert('服务器错误');
+            console.log(err);
+         })
+      }
     },
     created(){
       var pathname=window.location.pathname;
       // console.log(pathname);
-      if (pathname=="/reg"||pathname=="/reg#"){
-         this.reg=true;
+      if(!window.sessionStorage.getItem('logined')){
+
+         this.axios.get('/login/userlogin/',{
+         },{
+            responseType: 'json',
+         })
+         .then(res=>{
+            this.logined=res.data.logined;
+            if(this.logined){
+               this.username=res.data.username;
+               window.sessionStorage.setItem('username',res.data.username);
+               window.sessionStorage.setItem('logined',true);
+               if(pathname=="/reg"||pathname=='/login'){
+                  this.$router.push({
+                     path:"/",
+                  });
+               }
+               this.reg_and_login=false;
+
+            }
+         })
+         .catch(err=>{
+            alert('服务器错误');
+            console.log(err);
+         })
+         
+         
+      }else{
+         this.logined=true;
+         this.username=window.sessionStorage.getItem('username');
+         if(pathname=="/reg"||pathname=='/login'){
+            this.$router.push({
+               path:"/",
+            });
+         }
       }
-      else if(pathname=='/login'||pathname=="/login#"){
-         this.login=true;
-      }
-      else{
-         this.reg_and_login=true;
+      if(!this.logined){
+         if (pathname=="/reg"||pathname=="/reg#"){
+            this.reg=true;
+         }
+         else if(pathname=='/login'||pathname=="/login#"){
+            this.login=true;
+         }
+         else{
+            this.reg_and_login=true;
+         }
       }
    },
  }

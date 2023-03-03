@@ -8,12 +8,10 @@ axios.defaults.baseURL="https://newsmanager.com:8000";
 axios.interceptors.request.use(config => {
     config.headers['X-Requested-With'] = 'XMLHttpRequest';
     
-    // let regex = /.*csrftoken=([^;.]*).*$/; // 用于从cookie中匹配 csrftoken值
-    // console.log(document.cookie)
     config.headers['X-CSRFToken'] =  window.sessionStorage.getItem("csrf_token");
     return config
   }, err => {
-    // 请求未成功发出，如：没有网络...
+    // 请求未成功发出
     return Promise.reject(err)
   })
 Vue.use(VueAxios, axios) 

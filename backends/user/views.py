@@ -21,6 +21,7 @@ class mobileCountAPI(APIView):
 
         count = User.objects.filter(mobile=mobile).count()
         return Response({'code':0,'count':count,'errmsg':'ok'})
+#检查邮箱是否已存在
 class emailCountAPI(APIView):
     def get(self,request,email):
         count = User.objects.filter(email=email).count()
@@ -106,11 +107,24 @@ class userloginAPI(APIView):
             a=User.objects.get(username=username)
 
         #制作响应信息
-        response=Response({'code':0,'errmsg':'ok'})
+        response=Response({'code':0,'errmsg':'ok','session_id':request.session,'username':a.username})
         username=a.username.encode(encoding='utf-8')
         response.set_cookie('username',username,samesite="None",secure=True)
 
         return response
+    def get(self,request):
+        try:
+            user=request.user
+            if user.username=="AnonymousUser":
+                return Response({'code':0,'errmsg':'ok','logined':False})
+            if User.objects.get(username=user.username):
+                return Response({'code':0,'erermsg':'ok','logined':True,'username':user.username})
+            else:
+                return Response({'code':0,'errmsg':'ok','logined':False})
+        except Exception as e:
+            print(e)
+            return Response({'code':0,'errmsg':'ok','logined':False})
+
 
 #用户退出API
 class logoutAPI(APIView):
