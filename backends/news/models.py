@@ -24,3 +24,4 @@ class Category(BaseModel):
             Category.objects.create(name=name)
         else:
             print("类别\"{}\"已存在".format(name))
+

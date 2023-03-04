@@ -112,18 +112,19 @@ class userloginAPI(APIView):
         response.set_cookie('username',username,samesite="None",secure=True)
 
         return response
+    #获取用户登录状态
     def get(self,request):
         try:
             user=request.user
             if user.username=="AnonymousUser":
-                return Response({'code':0,'errmsg':'ok','logined':False})
+                return Response({'code':400,'errmsg':'AnonymousUser','logined':False})
             if User.objects.get(username=user.username):
                 return Response({'code':0,'erermsg':'ok','logined':True,'username':user.username})
             else:
-                return Response({'code':0,'errmsg':'ok','logined':False})
+                return Response({'code':400,'errmsg':'AnonymousUser','logined':False})
         except Exception as e:
             print(e)
-            return Response({'code':0,'errmsg':'ok','logined':False})
+            return Response({'code':400,'errmsg':e,'logined':False})
 
 
 #用户退出API

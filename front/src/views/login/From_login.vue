@@ -26,7 +26,7 @@
 <script>
  export default {
 
-    data() {
+data() {
 
 var validatePassword = (rule, value, callback) => {
   if (value === '') {

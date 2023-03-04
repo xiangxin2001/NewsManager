@@ -4,6 +4,7 @@ import Index from '@/views/index/Index.vue'
 import Register from '@/views/register/Register.vue'
 import NotFound from '@/views/notfound/NotFound.vue'
 import Login from '@/views/login/Login.vue'
+import Detail from '@/views/detail/Detail.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -21,6 +22,11 @@ const routes = [
     path:'/login',
     name:'login',
     component:Login
+  },
+  {
+    path:'/detail/:news_id',
+    name:'news_detail',
+    component:Detail,
   },
   {
     path: '/*', 

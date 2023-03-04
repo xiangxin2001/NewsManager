@@ -16,9 +16,9 @@
   import Logo from '@/components/Logo.vue'
   import MyHeader  from '@/components/MyHeader.vue';
   export default {
-      name:"Index",
-      components: {
-        logo:Logo,myheader:MyHeader
+    name:"Index",
+    components: {
+      logo:Logo,myheader:MyHeader
     }
   
   }

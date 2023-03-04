@@ -44,7 +44,7 @@
       <el-menu-item index="4" ><a href="/reg" target="_self"><div>注册</div></a></el-menu-item>
       <el-menu-item index="5" ><a href="/login" target="_self"><div>登录</div></a></el-menu-item>
       </div>
-      <div class="right_header" v-show="logined" style="width: 100px;">
+      <div class="right_header" v-show="logined" style="width: auto;">
       <el-submenu index="4">
          <template slot="title"><div><i class="el-icon-user-solid" style="display: inline-block;"></i><span style="display: inline-block;">{{ username }}</span></div></template>
             <el-menu-item index="4-1"><a href="#" target="_self"><div>用户中心</div></a></el-menu-item>
