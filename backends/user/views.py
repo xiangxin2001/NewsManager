@@ -59,9 +59,7 @@ class registerNewAPI(APIView):
 
         #保存用户注册信息到数据库
         try:
-            user_save=User.objects.create_user(username=username,password=password,mobile=mobile,email=email)
-
-            login(request,user_save)
+           User.objects.create_user(username=username,password=password,mobile=mobile,email=email)
         except Exception as e:
             return Response({'code':400,'errmsg':str(e)})
 
@@ -79,9 +77,11 @@ class userloginAPI(APIView):
             return Response({'code':400,'errmsg':'Incomplete parameters'})
 
         
-        #判断是否是手机号登录
-        if re.match('1[345789]\d{9}',username):
+        #判断登录方式
+        if re.match(r'1[345789]\d{9}',username):
             User.USERNAME_FIELD='mobile'
+        elif re.match(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$',username):
+            User.USERNAME_FIELD='email'
         else:
             User.USERNAME_FIELD='username'
         

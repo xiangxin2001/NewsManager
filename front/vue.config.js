@@ -13,7 +13,7 @@ module.exports = defineConfig({
         'localhost',
         '127.0.0.1'    
       ],
-      port:8000,
+      port:8080,
     },
   
 })

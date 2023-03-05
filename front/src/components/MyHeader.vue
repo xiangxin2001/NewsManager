@@ -7,14 +7,14 @@
       <div class="second">
          <el-submenu index="2">
             <template slot="title"><a href="#"><div>新闻分类</div></a></template>
-            <el-menu-item index="2-1"><a href="#" target="_self"><div>政治新闻</div></a></el-menu-item>
-            <el-menu-item index="2-2"><a href="#" target="_self"><div>财经新闻</div></a></el-menu-item>
-            <el-menu-item index="2-3"><a href="#" target="_self"><div>社会新闻</div></a></el-menu-item>
-            <el-menu-item index="2-4"><a href="#" target="_self"><div>文化娱乐</div></a></el-menu-item>
-            <el-menu-item index="2-5"><a href="#" target="_self"><div>体育新闻</div></a></el-menu-item>
-            <el-menu-item index="2-6"><a href="#" target="_self"><div>健康新闻</div></a></el-menu-item>
-            <el-menu-item index="2-7"><a href="#" target="_self"><div>军事新闻</div></a></el-menu-item>
-            <el-menu-item index="2-8"><a href="#" target="_self"><div>国际新闻</div></a></el-menu-item>
+            <el-menu-item index="2-1"><a href="/category/1" target="_self"><div>政治新闻</div></a></el-menu-item>
+            <el-menu-item index="2-2"><a href="/category/2" target="_self"><div>财经新闻</div></a></el-menu-item>
+            <el-menu-item index="2-3"><a href="/category/3" target="_self"><div>社会新闻</div></a></el-menu-item>
+            <el-menu-item index="2-4"><a href="/category/4" target="_self"><div>文化娱乐</div></a></el-menu-item>
+            <el-menu-item index="2-5"><a href="/category/5" target="_self"><div>体育新闻</div></a></el-menu-item>
+            <el-menu-item index="2-6"><a href="/category/6" target="_self"><div>健康新闻</div></a></el-menu-item>
+            <el-menu-item index="2-7"><a href="/category/7" target="_self"><div>军事新闻</div></a></el-menu-item>
+            <el-menu-item index="2-8"><a href="/category/8" target="_self"><div>国际新闻</div></a></el-menu-item>
             <!-- <el-submenu index="2-4">
                <template slot="title">选项4</template>
                <el-menu-item index="2-4-1">选项1</el-menu-item>
@@ -123,7 +123,6 @@
             }
          })
          .catch(err=>{
-            alert('服务器错误');
             console.log(err);
          })
          
@@ -146,6 +145,12 @@
          }
          else{
             this.reg_and_login=true;
+            if(pathname=='/search'){
+               alert("登录后可使用搜索功能")
+               this.$router.push({
+                  path:"/login"
+               })
+            }
          }
       }
    },

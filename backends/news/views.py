@@ -40,16 +40,44 @@ class News_detailAPI(APIView):
             if news:
                 news_info={
                     "title":news.title,
-                    "categroy":str(news.category.id),
+                    "category":str(news.category.id),
                     "passage":str(news.passage),
                     "news_from":news.news_from,
                     "url":news.url,
-                    "breadcrumb":{"首页":"/",str(news.category.name):"/categroy/{}".format(news.category.id),news.title:"/detail/{}".format(news_id)}
+                    "breadcrumb":{"首页":"/",str(news.category.name):"/category/{}".format(news.category.id),news.title:"/detail/{}".format(news_id)}
                 }
                 return Response({"code":0,"errmsg":"ok","news":news_info})
             else:
                 return Response({"code":400,"errmsg":"newsDoNotExist"})
         except Exception as e:
             print(e)
-            return Response({"code":400,"errmsg":e})
+            return Response({"code":400,"errmsg":str(e)})
 
+class News_categoryAPI(APIView):
+    def get(self,request,category_id):
+        category_id=int(category_id)
+        try:
+            page=int(request.GET.get('page',1))
+            pagesize=int(request.GET.get('pagesize',15))
+            news_list=News.objects.filter(category=category_id).order_by("-create_time")
+            total=len(news_list)
+            result_list=[]
+            if total>1:
+                if total>=page*pagesize:
+                    news_list=news_list[pagesize*(page-1):pagesize*page]
+                else:
+                    news_list=news_list[pagesize*(page-1):total]
+                for news in news_list:
+                    news_info={
+                        "title":news.title,
+                        "url":"/detail/{}".format(news.id),
+                    }
+                    result_list.append(news_info)
+                bread={"首页":"/",str(Category.objects.get(id=category_id).name):"/category/{}".format(category_id),
+                       "第{}页".format(page):"/category/{}?page='{}'&pagesize={}".format(category_id,page,pagesize)}
+                return Response({"code":0,"errmsg":"ok","total":total,"news_list":result_list, "breadcrumb":bread})
+            else:
+                return Response({"code":400,"errmsg":"categoryDoNotExist"})
+        except Exception as e:
+            print(e)
+            return Response({"code":400,"errmsg":str(e)})

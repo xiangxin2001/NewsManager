@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    
     <router-view>
       
     </router-view>
@@ -31,5 +32,13 @@ export default {
 </script>
 
 <style>
+.el-pagination.is-background .el-pager li:not(.disabled) {
+    background-color: rgba(0,0,0,0);   
+    color: #060606;
+  }
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+    background-color: rgba(57, 222, 156, 0.9);  
+    color: #fff;
+}
 
 </style>

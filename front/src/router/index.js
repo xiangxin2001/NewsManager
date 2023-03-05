@@ -5,13 +5,15 @@ import Register from '@/views/register/Register.vue'
 import NotFound from '@/views/notfound/NotFound.vue'
 import Login from '@/views/login/Login.vue'
 import Detail from '@/views/detail/Detail.vue'
+import Category from '@/views/categroy/Category.vue'
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component:Index
+    component:Index,
+    alias: '/home',
   },
   {
     path:'/reg',
@@ -27,6 +29,11 @@ const routes = [
     path:'/detail/:news_id',
     name:'news_detail',
     component:Detail,
+  },
+  {
+    path:'/category/:category_id',
+    name:'news_category',
+    component:Category,
   },
   {
     path: '/*', 

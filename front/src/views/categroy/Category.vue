@@ -6,8 +6,7 @@
         <myheader></myheader>
       </el-header>
         <el-main>
-          
-          <passage></passage>
+            <newslist></newslist>
         </el-main>
     </el-container>
   </el-container>
@@ -18,14 +17,12 @@
   <script>
   import Logo from '@/components/Logo.vue'
   import MyHeader  from '@/components/MyHeader.vue';
-  import PassageShow from './PassageShow.vue';
-  
+  import NewsList from'./NewsList.vue'
   export default {
-    name:"Detail",
+    name:"Category",
     components: {
-    logo:Logo,myheader:MyHeader,passage:PassageShow
+    logo:Logo,myheader:MyHeader,newslist:NewsList,
     }
-  
   }
   </script  >
   

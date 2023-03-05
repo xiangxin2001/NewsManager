@@ -1,5 +1,6 @@
 <template>
 <div>
+<el-skeleton :rows="7" animated v-show="data_not_loaded"/>
 <el-item> 
     <el-breadcrumb separator="/"  v-for="(val,key,i) in breadcrumb" :key="i" class="bdcb" :bread="breadcrumb">
         <el-breadcrumb-item><a :href="val">{{key}}&ensp;</a></el-breadcrumb-item>
@@ -30,6 +31,7 @@
                 news_from:"",
                 url:"",
                 breadcrumb:{},
+                data_not_loaded:true,
             }
         }
     },
@@ -43,6 +45,7 @@
         })
         .then(res=>{
             if(res.data.code==0){
+                this.data_not_loaded=false;
                 this.news.title=res.data.news.title;
                 this.news.category=res.data.news.category;
                 this.news.passage=res.data.news.passage;
@@ -76,10 +79,12 @@
     line-height: 15px;
     border: 1px solid #030303;
     display: inline-flex;
-    text-align: center;
-    border-radius: 3px;
-    a{  margin-left: 2px;
-        font-size: 10px;
+    
+    border-radius: 2px;
+    a{  margin-left: 10px;
+        margin-right: 10px;
+        text-align: center;
+        font-size: 18px;
         text-decoration: none;
     };
     :hover{
@@ -87,7 +92,7 @@
     };
 }
 .title{
-    font-size: 40px;
+    font-size: 40px; 
     line-height: 50px;
     padding-top: 35px;
     padding-bottom: 24px;
@@ -128,7 +133,7 @@ img{
         border:1px solid;
         border-color: #40f2f5;
         border-radius:6px;
-    }
+        }
     }
     
     
