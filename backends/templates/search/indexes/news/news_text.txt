@@ -1,4 +1,3 @@
 {{object.title}}
 {{object.news_from}}
 {{object.category.name}}
-{{object.passage}}

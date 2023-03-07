@@ -89,16 +89,24 @@ class News_categoryAPI(APIView):
 #新闻搜索API
 from haystack.views import SearchView
 from django.http import JsonResponse
+from operator import attrgetter
 class NewsSearchView(SearchView):
      def create_response(self):
         context = self.get_context()
         news_list=[]
+        obj_list=[]
         for news in context['page'].object_list:
             try:
                 id=str(news.id)
                 id=id.split('.')
                 id=id[-1]
                 news_obj=News.objects.get(id=id)
+                obj_list.append(news_obj)
+            except Exception as e:
+                print(e)
+        obj_list.sort(reverse=True,key=attrgetter("create_time"))
+        for news_obj in obj_list:
+            try:
                 time=news_obj.create_time.strftime(r"%Y-%m-%d")
                 time=time.split('-')
                 timestr="{}年{}月{}日".format(time[0],time[1],time[2])
