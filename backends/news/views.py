@@ -61,23 +61,62 @@ class News_categoryAPI(APIView):
             pagesize=int(request.GET.get('pagesize',15))
             news_list=News.objects.filter(category=category_id).order_by("-create_time")
             total=len(news_list)
-            result_list=[]
+            news_list_list=[]
             if total>1:
                 if total>=page*pagesize:
                     news_list=news_list[pagesize*(page-1):pagesize*page]
                 else:
                     news_list=news_list[pagesize*(page-1):total]
                 for news in news_list:
+                    time=news.create_time.strftime(r"%Y-%m-%d")
+                    time=time.split('-')
+                    timestr="{}年{}月{}日".format(time[0],time[1],time[2])
                     news_info={
                         "title":news.title,
                         "url":"/detail/{}".format(news.id),
+                        "time":timestr
                     }
-                    result_list.append(news_info)
+                    news_list_list.append(news_info)
                 bread={"首页":"/",str(Category.objects.get(id=category_id).name):"/category/{}".format(category_id),
-                       "第{}页".format(page):"/category/{}?page='{}'&pagesize={}".format(category_id,page,pagesize)}
-                return Response({"code":0,"errmsg":"ok","total":total,"news_list":result_list, "breadcrumb":bread})
+                       "第{}页".format(page):"/category/{}?page={}&pagesize={}".format(category_id,page,pagesize)}
+                return Response({"code":0,"errmsg":"ok","total":total,"news_list":news_list_list, "breadcrumb":bread})
             else:
                 return Response({"code":400,"errmsg":"categoryDoNotExist"})
         except Exception as e:
             print(e)
             return Response({"code":400,"errmsg":str(e)})
+
+#新闻搜索API
+from haystack.views import SearchView
+from django.http import JsonResponse
+class NewsSearchView(SearchView):
+     def create_response(self):
+        context = self.get_context()
+        news_list=[]
+        for news in context['page'].object_list:
+            try:
+                id=str(news.id)
+                id=id.split('.')
+                id=id[-1]
+                news_obj=News.objects.get(id=id)
+                time=news_obj.create_time.strftime(r"%Y-%m-%d")
+                time=time.split('-')
+                timestr="{}年{}月{}日".format(time[0],time[1],time[2])
+                news_list.append({
+                    "title":news_obj.title,
+                    "url":"/detail/{}".format(news_obj.id),
+                    "time":timestr,
+                })
+            except Exception as e:
+                print(e)
+           
+        result_json={
+            'code':0,
+            'errmsg':'ok',
+            'searchkey': context.get('query'),
+            'page_size': context['page'].paginator.num_pages,
+            'count': context['page'].paginator.count,
+            'news_list':news_list,
+        }
+     
+        return JsonResponse(result_json,safe=False)

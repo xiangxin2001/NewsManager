@@ -1,25 +1,24 @@
 <template>
  <div>
     <el-skeleton :rows="7" animated v-show="data_loading"/>
-    <el-item> 
-    <el-breadcrumb separator="/"  v-for="(val,key,i) in breadcrumb" :key="i" class="bdcb" :bread="breadcrumb">
-        <el-breadcrumb-item><a :href="val">{{key}}&ensp;</a></el-breadcrumb-item>
-    </el-breadcrumb>
-    </el-item>
+    <div> 
+    <div v-for="(val,key,i) in breadcrumb" :key="i" class="bdcb" :bread="breadcrumb">
+        <span><a :href="val">{{key}}</a></span>
+    </div>
+    </div>
     <el-main>
         <ul v-for="(news,i) in news_list" :key="i" class="news_list">
-        <li><a :href="news.url">{{ news.title }}</a></li>
+        <li><span class="time">{{ news.time }}</span><span class="news_box"><a :href="news.url">{{ news.title }}</a></span></li>
         </ul>
-        <div >
+        <div>
         <el-pagination
             @current-change="handleCurrentChange"
             :current-page="page"
             :page-size="pagesize"
             layout="prev, pager, next, jumper"
             :total="total"
-            pager-count="8"
-            hide-on-single-page="true"
-            background="true">
+            hide-on-single-page
+            background>
         </el-pagination>
   </div>
     </el-main>
@@ -42,11 +41,15 @@
     },
     created(){
         if(this.$route.query.page!=undefined&&this.$route.query.pagesize!=undefined){
-            this.page=this.$route.query.page;
-            this.pagesize=this.$route.query.pagesize;
+            this.page=Number(this.$route.query.page);
+            this.pagesize=Number(this.$route.query.pagesize);
         }
-        let url='/news/category/'+this.$route.params.category_id+'?page='+this.page+'&pagesize='+this.pagesize;
+        let url='/news/category/'+this.$route.params.category_id;
         this.axios.get(url,{
+            params:{
+                page:this.page,
+                pagesize:this.pagesize,
+            },
             responseType:'json',
         })
         .then(res=>{
@@ -73,8 +76,12 @@
     methods: {
         handleCurrentChange(targetpage){
             this.page=targetpage;
-            let url='/news/category/'+this.$route.params.category_id+'?page='+this.page+'&pagesize='+this.pagesize;
+            let url='/news/category/'+this.$route.params.category_id;
             this.axios.get(url,{
+                params:{
+                    page:this.page,
+                    pagesize:this.pagesize,
+                },
                 responseType:'json',
             })
             .then(res=>{
@@ -84,7 +91,10 @@
                     this.total=res.data.total;
                     this.breadcrumb=res.data.breadcrumb;
                     this.$router.push({
-                    path:'/category/'+this.$route.params.category_id+'?page='+this.page+'&pagesize='+this.pagesize
+                    path:'/category/'+this.$route.params.category_id,
+                    query:{
+                        page:this.page,pagesize:this.pagesize,
+                    }
                     })
                 }else{
                     console.log(res.data.errmsg);
@@ -111,17 +121,18 @@
     
 };
 .bdcb{
-    background-color: rgba(57, 222, 156, 0.3);
-    line-height: 15px;
+    background-color: rgba(255, 255, 255, 0.5);
     border: 1px solid #030303;
     display: inline-flex;
     
-    border-radius: 2px;
-    a{  margin-left: 10px;
+    border-radius: 6px;
+    a{  line-height:25px;
+        margin-left: 10px;
         margin-right: 10px;
         text-align: center;
         font-size: 18px;
         text-decoration: none;
+        color:black
     };
     :hover{
         background-color: rgba(57, 222, 156, 0.5);
@@ -136,7 +147,7 @@
 } 
     li{
         list-style:none;
-        line-height: 40px;
+        line-height: 30px;
         font-size:22px;
         position: relative;
         padding-left: 20px;
@@ -152,19 +163,24 @@
             border-radius:25%;
             background: rgba(245, 44, 242, 0.519)
         };
-        :hover{
+        .news_box:hover{
+            padding-inline: 5px;
             background-color: rgba(57, 222, 156, 0.5);
             border: 1px solid rgba(0, 255, 255, 0.5);
-            border-radius: 8px;
         };
         a{
-            
+            line-height: 0px;
             text-decoration: none;
             color: #030303;
         }
     }
 };
-
+.time{
+    line-height: 0px;
+    text-align: left;
+    font-size: 8px;
+    display: inline;
+}
 </style>
 
   

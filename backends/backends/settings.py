@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'apscheduler',
     'user',
     'sslserver',
+    'haystack',
 ]
 
 MIDDLEWARE = [
@@ -61,7 +62,7 @@ ROOT_URLCONF = 'backends.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR/"templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -206,3 +207,15 @@ SESSION_COOKIE_SAMESITE="None"
 
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"
+
+#搜索引擎配置
+HAYSTACK_CONNECTIONS = {
+    'default': {
+
+        'ENGINE': 'news.whoosh_cn_backend.WhooshEngine',
+        # 索引文件的 存放路径，所有的 索引文件 都存放在 该目录下。生成索引文件时，自动 在目录(BASE_DIR)下 创建目录(whoosh_index)
+        'PATH': (BASE_DIR/'whoosh_index'),
+    }
+}
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 15

@@ -17,8 +17,8 @@
 
 <script>
 
-import form_register from '@/views/register/Form_register.vue'
-import Logo from '@/components/Logo.vue'
+import form_register from '@/views/register/Form_register.vue';
+import Logo from '@/components/Logo.vue';
 import MyHeader  from '@/components/MyHeader.vue';
 export default {
   name:"Register",

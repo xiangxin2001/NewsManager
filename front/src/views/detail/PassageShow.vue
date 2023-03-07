@@ -2,9 +2,9 @@
 <div>
 <el-skeleton :rows="7" animated v-show="data_not_loaded"/>
 <el-item> 
-    <el-breadcrumb separator="/"  v-for="(val,key,i) in breadcrumb" :key="i" class="bdcb" :bread="breadcrumb">
-        <el-breadcrumb-item><a :href="val">{{key}}&ensp;</a></el-breadcrumb-item>
-    </el-breadcrumb>
+    <div v-for="(val,key,i) in breadcrumb" :key="i" class="bdcb" :bread="breadcrumb">
+        <span><a :href="val">{{key}}</a></span>
+    </div>
 </el-item>
 <el-main>
  <h1 class="title">{{news.title}}</h1>
@@ -75,22 +75,23 @@
     
 };
 .bdcb{
-    background-color: rgba(57, 222, 156, 0.3);
-    line-height: 15px;
+    background-color: rgba(255, 255, 255, 0.5);
     border: 1px solid #030303;
     display: inline-flex;
     
-    border-radius: 2px;
-    a{  margin-left: 10px;
+    border-radius: 6px;
+    a{  line-height:25px;
+        margin-left: 10px;
         margin-right: 10px;
         text-align: center;
         font-size: 18px;
         text-decoration: none;
+        color:black
     };
     :hover{
         background-color: rgba(57, 222, 156, 0.5);
     };
-}
+};
 .title{
     font-size: 40px; 
     line-height: 50px;

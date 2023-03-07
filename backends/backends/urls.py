@@ -18,7 +18,7 @@ from django.urls import path,include
 from .views import get_tokenAPI
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('news/',include('news.urls')),
+    path('',include('news.urls')),
     path('',include('user.urls')),
     path('get_token',get_tokenAPI.as_view())
 ]

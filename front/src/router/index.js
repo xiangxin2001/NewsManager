@@ -6,6 +6,7 @@ import NotFound from '@/views/notfound/NotFound.vue'
 import Login from '@/views/login/Login.vue'
 import Detail from '@/views/detail/Detail.vue'
 import Category from '@/views/categroy/Category.vue'
+import Search from '@/views/search/Search.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -18,12 +19,20 @@ const routes = [
   {
     path:'/reg',
     name:'register',
-    component:Register
+    component:Register,
+    alias: '/reg/',
   },
   {
     path:'/login',
     name:'login',
-    component:Login
+    component:Login,
+    alias: '/login/',
+  },
+  {
+    path:'/search',
+    name:'news_search',
+    component:Search,
+    alias: '/search/',
   },
   {
     path:'/detail/:news_id',

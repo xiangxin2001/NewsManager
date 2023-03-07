@@ -29,7 +29,8 @@
                   <el-input
                      placeholder="请输入内容"
                      prefix-icon="el-icon-search"
-                     v-model="search_data">
+                     v-model="search_data"
+                     @keyup.enter.native="search_news">
                   </el-input>
                </div>
          </el-menu-item>
@@ -96,6 +97,27 @@
             alert('服务器错误');
             console.log(err);
          })
+      },
+      search_news(){
+         
+         if(this.logined){
+            if(this.search_data.length>=1){
+               
+               window.sessionStorage.setItem('q',this.search_data)
+               this.$router.push({
+                  path:'/search',
+                  query:{
+                     q:this.search_data,
+                  }
+               });
+               location.reload();
+            }else{
+               alert('暂不支持无关键字搜索，请输入关键字')
+            }
+
+         }else{
+            alert('登录后方可搜索')
+         }
       }
     },
     created(){
@@ -158,18 +180,12 @@
 </script>
 
 <style lang='less' scoped>
-   a{ text-decoration:none;
-      
-      :hover{
-         color: black;
-         display: inline-flex;
-      }
-      
+   a{ text-decoration:none;    
       div{
-         color: rgba(105, 105, 121, 0.503);
-         
+         color: rgb(0, 0, 0);    
       }
    }
+   
    .first{
       display: inline-flex;
 
