@@ -65,3 +65,13 @@ class UserModelSerializer(ModelSerializer):
 #                             on_delete=models.CASCADE,
 #                             verbose_name='用户'
 #                             )
+from utils.models import BaseModel
+class UserCharacters(BaseModel):
+    user=models.ForeignKey('User',on_delete=models.CASCADE,verbose_name='用户')
+    news_categroy=models.CharField(max_length=50,blank=True,null=True,verbose_name='用户浏览新闻类别')
+    news_keyword=models.CharField(max_length=200,blank=True,null=True,verbose_name='用户浏览新闻关键词')
+    news_histroy=models.TextField(blank=True,null=True,verbose_name='用户浏览新闻记录')
+    class Meta:
+        db_table = 'tb_usercharacters'
+        verbose_name='用户特征'
+        verbose_name_plural=verbose_name

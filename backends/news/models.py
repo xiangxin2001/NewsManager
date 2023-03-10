@@ -25,3 +25,12 @@ class Category(BaseModel):
         else:
             print("类别\"{}\"已存在".format(name))
 
+
+class NewsCharacters(BaseModel):
+    news=models.ForeignKey('News',on_delete=models.CASCADE,verbose_name='新闻')
+    visited=models.IntegerField(default=0,verbose_name='被浏览次数')
+    keywords=models.CharField(max_length=200,verbose_name='新闻关键词')
+    class Meta:
+        db_table='tb_newscharacters'
+        verbose_name='新闻特征'
+        verbose_name_plural=verbose_name

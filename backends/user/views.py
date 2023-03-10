@@ -2,7 +2,7 @@ import re
 from django.contrib.auth import login,authenticate,logout
 from utils.view import LoginRequiredJSONMixin
 # Create your views here.
-from .models import User,UserModelSerializer
+from .models import User,UserModelSerializer,UserCharacters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -59,7 +59,8 @@ class registerNewAPI(APIView):
 
         #保存用户注册信息到数据库
         try:
-           User.objects.create_user(username=username,password=password,mobile=mobile,email=email)
+           user_obj=User.objects.create_user(username=username,password=password,mobile=mobile,email=email)
+           UserCharacters.create(user=user_obj)
         except Exception as e:
             return Response({'code':400,'errmsg':str(e)})
 
@@ -103,10 +104,14 @@ class userloginAPI(APIView):
         a=object()
         if User.USERNAME_FIELD=='mobile':
             a=User.objects.get(mobile=username)
+        elif User.USERNAME_FIELD=='email':
+            a=User.objects.get(email=username)
         else:
             a=User.objects.get(username=username)
 
         #制作响应信息
+        if not UserCharacters.objects.filter(user=a):
+            UserCharacters.objects.create(user=a)
         response=Response({'code':0,'errmsg':'ok','session_id':request.session,'username':a.username})
         username=a.username.encode(encoding='utf-8')
         response.set_cookie('username',username,samesite="None",secure=True)

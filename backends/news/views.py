@@ -1,5 +1,5 @@
 from utils.sprider.sprider import main,BASE_DIR
-from .models import News,Category
+from .models import News,Category,NewsCharacters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import pandas
@@ -38,14 +38,17 @@ class News_detailAPI(APIView):
         try:
             news=News.objects.get(id=news_id)
             if news:
+                NewsCharacters.get(news=news).visited+=1
                 news_info={
                     "title":news.title,
                     "category":str(news.category.id),
                     "passage":str(news.passage),
                     "news_from":news.news_from,
                     "url":news.url,
+                    "visited":NewsCharacters.get(news=news).visited,
                     "breadcrumb":{"首页":"/",str(news.category.name):"/category/{}".format(news.category.id),news.title:"/detail/{}".format(news_id)}
                 }
+
                 return Response({"code":0,"errmsg":"ok","news":news_info})
             else:
                 return Response({"code":400,"errmsg":"newsDoNotExist"})
@@ -128,3 +131,8 @@ class NewsSearchView(SearchView):
         }
      
         return JsonResponse(result_json,safe=False)
+     
+
+#已有新闻特征建模函数
+def NewsCharacterforowned():
+    pass
