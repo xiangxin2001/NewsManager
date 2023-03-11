@@ -7,6 +7,7 @@ from jieba import analyse
 # Create your views here.
 #爬取的新闻入库
 def Sprider_data_in():
+    DEBUG=False
     sp=main()
     sp.main()
     target_list={}
@@ -15,6 +16,7 @@ def Sprider_data_in():
         target_list=json.load(f)
         target_list=target_list["target_list"]
     if target_list:
+        count=0
         for target in target_list:
             data_dict=pandas.read_csv(BASE_DIR/'{}.csv'.format(target["name"]),index_col=0, squeeze=True).to_dict()
             for i in data_dict['title'].keys():
@@ -27,11 +29,18 @@ def Sprider_data_in():
                     keywords=','.join(keyword_list)
                     NewsCharacters.objects.create(news=news_obj,keywords=keywords)
                     news_obj.save()
-                    print("新闻{}入库，特征已创建".format(data_dict['title'][i]))
+                    if DEBUG:
+                        print("新闻{}入库，特征已创建".format(data_dict['title'][i]))
                     
                 else:
-                    print("数据重复")
+                    if DEBUG:
+                        print("数据重复")
+            if not DEBUG:
+                total=len(target_list)
+                barlen=30
+                print('\r{}[{}]{}/{}'.format('新闻数据入库','*'*(count*barlen//total)+'-'*(barlen-count*barlen//total),count,total),end='')
         News.objects.filter(passage='nan').delete()
+
 
 
 # Sprider_data_in()

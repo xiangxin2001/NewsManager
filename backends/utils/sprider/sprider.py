@@ -4,9 +4,12 @@ import time
 from pathlib import Path
 import random
 BASE_DIR = Path(__file__).resolve().parent
-
+DEBUG=False
 
 #定义爬虫类
+def progressbar(count:int,total:int,tips:str,barlen:str)->None:
+    print('\r{}[{}]{}/{}'.format(tips,'*'*(count*barlen//total)+'-'*(barlen-count*barlen//total),count,total),end='')
+
 class Web_Sprider:
     def __init__(self,url:str,name:str,example:str,categroy:str,categroy_num_list:list) -> None:
         self.url,self.name,self.example,self.categroy_num_list = url,name,example,categroy_num_list
@@ -38,9 +41,11 @@ class Web_Sprider:
                 self.save()
                 self.parse_news_detail(xpath_dict=xpath_dict)
             else:
-                print("news_detail_dict为空，请检查")
+                if DEBUG:
+                    print("news_detail_dict为空，请检查")
         else:
-            print("news_list_dict为空，请检查")
+            if DEBUG:
+                print("news_list_dict为空，请检查")
         
     #解析网页获取新闻列表    
     def parse_news_list(self,rule_dict:dict)->None:
@@ -49,42 +54,54 @@ class Web_Sprider:
         # with open(BASE_DIR/"{}_data.json".format(self.name),"r",encoding="utf-8") as f:
         #     dataset=json.load(f)
         #     # dataset=dataset["dataset"]
+        count=0
         for keyword in self.categroy_list:
             rule_list=rule_dict[keyword]
             parser=Html_parser_re(data=self.dataset[keyword],rule_list=rule_list)
             news_list=parser.main()
             self.news_list_dict[keyword]=news_list
-            
+            if not DEBUG:
+                progressbar(count,len(self.categroy_list),'解析{}新闻列表'.format(self.name),30)
+            count+=1
         # print(self.news_list_dict)
         
     #爬取新闻列表数据
     def get_news_list(self) -> None:
         
         #组装url并爬取网页,获取新闻列表
+        count=0
         for keyword in self.categroy_list:
             flag=True
             try:
-                print("-----正在爬取网页{}-----".format(self.example.format(keyword)))
+                if DEBUG:
+                    print("-----正在爬取网页{}-----".format(self.example.format(keyword)))
                 data=requests.get(url=self.example.format(keyword),headers=self.headers,timeout=20).content
             except Exception as e:
-                print(str(e))
+                if DEBUG:
+                    print(str(e))
                 flag=False
             if flag:
                 try:
                     data=data.decode('utf-8')
                 except Exception as e:
-                    print(str(e))
+                    if DEBUG:
+                        print(str(e))
                     data=data.decode('gbk')
                     
                 # print(data)
                 if data:
-                    print("-----网页{}爬取成功-----".format(self.example.format(keyword)))
+                    if DEBUG:
+                        print("-----网页{}爬取成功-----".format(self.example.format(keyword)))
                     self.dataset[keyword]=data
                     # time.sleep(random.uniform(1.2,2.0))
             else:
                 self.dataset[keyword]=""
-                print("-----网页爬取失败-----")
-                
+                if DEBUG:
+                    print("-----网页爬取失败-----")
+            if not DEBUG:
+                progressbar(count,len(self.categroy_list),'获取{}新闻详情页'.format(self.name),30)
+            count+=1
+
     #解析网页获取新闻
     def parse_news_detail(self,xpath_dict:dict)->bool:
         news={"title":[],"category":[],"passage":[],"news_from":[],"url":[]}
@@ -92,6 +109,7 @@ class Web_Sprider:
         # with open(BASE_DIR/"{}_data.json".format(self.name),"r",encoding="utf-8") as f:
         #     dict=json.load(f)
         #     news_detail_dict=dict["news_detail_dict"]
+        count=0
         for keyword in self.categroy_list:
             for news_detail in self.news_detail_dict[keyword]:
                 xpath=xpath_dict[keyword]
@@ -103,9 +121,14 @@ class Web_Sprider:
                     news["passage"].append(passage)
                     news["news_from"].append(self.name)
                     news["url"].append(news_detail["url"])
-                    print("解析成功！")
+                    if DEBUG:
+                        print("解析成功！")
                 else:
-                    print("出错！请检查解析规则或数据")
+                    if DEBUG:
+                        print("出错！请检查解析规则或数据")
+            if not DEBUG:
+                progressbar(count,len(self.categroy_list),'解析{}新闻详情页获取新闻详情'.format(self.name),30)
+            count+=1
         import pandas
         news_csv=pandas.DataFrame(news,columns=["title","category","passage","news_from","url"])
         news_csv.to_csv(BASE_DIR/"{}.csv".format(self.name),index=True,encoding='utf-8')
@@ -114,52 +137,65 @@ class Web_Sprider:
     #爬取新闻详情页
     def get_news_detail(self)->None:
         self.news_detail_dict={}
+        count=0
         for keyword in self.categroy_list:
             news_detail_list=[]
             for item in self.news_list_dict[keyword]:
                 url=item['url']
                 title=item['title']
-                print("-----正在爬取网页{}-----".format(url))
+                if DEBUG:
+                    print("-----正在爬取网页{}-----".format(url))
                 flag=True
                 data:object
                 import re
                 try:
                     if re.match(r"http.*://.*?",url) is not None:
-                        print("原生")
+                        if DEBUG:
+                            print("原生")
                         data=requests.get(url=url,headers=self.headers,timeout=20).content
                     else:
                         if self.name=="人民网":
                             url="http://{}.people.com.cn{}".format(keyword,url)
-                            print("人民网{}".format(url))
+                            if DEBUG:
+                                print("人民网{}".format(url))
                             
                             data=requests.get(url=url,headers=self.headers,timeout=20).content
                         elif url[0]=='/':
                             url="{}{}".format(self.url,url)
-                            print("后{}".format(url))
+                            if DEBUG:
+                                print("后{}".format(url))
                             
                             data=requests.get(url=url,headers=self.headers,timeout=20).content
                         else:
                             url="http://{}".format(url)
-                            print("其他{}".format(url))
+                            if DEBUG:
+                                print("其他{}".format(url))
                             data=requests.get(url=url,headers=self.headers,timeout=20).content
                     
                 except Exception as e:
-                    print(str(e))
+                    if DEBUG:
+                        print(str(e))
                     flag=False
                 if flag:
                     try:
                         data=data.decode('utf-8')
                     except Exception as e:
-                        print(str(e))
+                        if DEBUG:
+                            print(str(e))
                         data=data.decode('gbk')
                     if data:
-                        print("-----网页{}爬取成功-----".format(url))
+                        if DEBUG:
+                            print("-----网页{}爬取成功-----".format(url))
                         news_detail_list.append({"url":url,"title":title,"data":data})
                         #实验性删除
                         del item
                         # time.sleep(random.uniform(1.5,3.0))
                 else:
+                    if DEBUG:
                         print("-----网页爬取失败-----")
+            if not DEBUG:
+                progressbar(count,len(self.categroy_list),'解析{}新闻详情页获取新闻详情'.format(self.name),30)
+            count+=1
             self.news_detail_dict[keyword]=news_detail_list
 
 
@@ -192,13 +228,15 @@ class Html_parser_re:
             if result_list:
                 for news in result_list:
                     news_list.append({"url":news[0],"title":news[1]})
-                print("网页解析成功")
+                if DEBUG:
+                    print("网页解析成功")
                 
                 rule=rule.replace('(.*?)','.*?')
                 self.data=re.sub(rule,"",self.data,flags=re.S)
         
             else:
-                print("正则匹配查找失败，请检查解析规则或数据\n{}\n{}".format(type(rule),rule))
+                if DEBUG:
+                    print("正则匹配查找失败，请检查解析规则或数据\n{}\n{}".format(type(rule),rule))
 
         return news_list
 
@@ -236,7 +274,8 @@ class Html_parser_xpath:
                     passage_r += tostring(passage_piece,encoding="utf-8").decode("utf-8")
                 # print('jieduan3\n{}\n{}'.format('--------------------------------',passage_r))
         except Exception as e:
-            print(str(e))
+            if DEBUG:
+                print(str(e))
    
         return passage_r
 
@@ -253,5 +292,5 @@ class main:
                 web_sprider=Web_Sprider(url=target["url"],name=target["name"],example=target["example"],categroy=target["categroy"],categroy_num_list=target["categroy_num_list"])
                 web_sprider.main()
 
-# test=main()
-# test.main()
+test=main()
+test.main()
