@@ -61,6 +61,7 @@ class registerNewAPI(APIView):
         try:
            user_obj=User.objects.create_user(username=username,password=password,mobile=mobile,email=email)
            UserCharacters.create(user=user_obj)
+           user_obj.save()
         except Exception as e:
             return Response({'code':400,'errmsg':str(e)})
 
@@ -109,9 +110,10 @@ class userloginAPI(APIView):
         else:
             a=User.objects.get(username=username)
 
-        #制作响应信息
+        #补创用户特征
         if not UserCharacters.objects.filter(user=a):
             UserCharacters.objects.create(user=a)
+        #制作响应信息
         response=Response({'code':0,'errmsg':'ok','session_id':request.session,'username':a.username})
         username=a.username.encode(encoding='utf-8')
         response.set_cookie('username',username,samesite="None",secure=True)
