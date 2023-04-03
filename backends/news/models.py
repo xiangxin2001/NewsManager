@@ -15,6 +15,7 @@ class News(BaseModel):
 class Category(BaseModel):
     name = models.CharField(max_length=40,verbose_name='名称')
     parent = models.ForeignKey('self',on_delete=models.SET_NULL,related_name='subs',null=True,blank=True,verbose_name='上级类别')
+    newsnum = models.IntegerField(default=0,verbose_name='新闻数量')
     class Meta:
         db_table='tb_category'
         verbose_name='类别'

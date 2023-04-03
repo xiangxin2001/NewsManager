@@ -60,7 +60,7 @@ class registerNewAPI(APIView):
         #保存用户注册信息到数据库
         try:
            user_obj=User.objects.create_user(username=username,password=password,mobile=mobile,email=email)
-           UserCharacters.create(user=user_obj)
+           UserCharacters.objects.create(user=user_obj)
            user_obj.save()
         except Exception as e:
             return Response({'code':400,'errmsg':str(e)})
@@ -151,8 +151,7 @@ class centerViewAPI(LoginRequiredJSONMixin,APIView):
     def get(self,request):
         user=request.user
         info=UserModelSerializer(instance=user)
-
-
+        
         return Response({'code':0,'errmsg':'ok','info_data':info.data})
 
 
@@ -179,4 +178,91 @@ class passwordChangeAPI(APIView):
 # else:
 #     User.objects.filter(username=name).delete()
 #     User.objects.create_superuser(username=name,password='lxb331047471a',email='2868308648@qq.com',mobile='15397008302')
+import json
+from news.models import News,NewsCharacters,Category
+from jieba import analyse
+import math
+class UserPoiCalculate:
+    def __init__(self,user:object) -> None:
+        self.flag=True
+        try:
+            self.usercharacters=UserCharacters.objects.get(user=user)
+        except Exception as e:
+            self.flag=False
+            print('用户{}角色特征不存在，请检查'.format(user.username))
+    #根据浏览历史计算新闻关键词
+    def calculate_news_keyword(self)->None:
+        if self.flag:
+            news_history=json.loads(self.usercharacters.news_history)
+            keywords=''''''
+            for news_id,num_visited in news_history.items():
+                try:
+                    newscharacters=NewsCharacters.objects.get(news=news_id)
+                    keywords=keywords+','+newscharacters.keywords*int(num_visited)
+                except Exception as e:
+                    print(e)
+            keyword_list=analyse.extract_tags(keywords,topK=30, withWeight=False, allowPOS=('n','v','nr','a','ns','s','nt','ORG','PER','LOC','nw'))
+            keywords=','.join(keyword_list)
+            self.usercharacters.news_keyword=keywords
+            self.usercharacters.save()
+            
+    #根据浏览历史计算新闻种类偏好
+    def calculate_Poi(self)->None:
+        if self.flag:
+            category_count={}
+            for category in Category.objects.all():
+                category_count[category.id]={'total':int(category.newsnum),'count':0,'grade':0}
+            
+            news_history=json.loads(self.usercharacters.news_history)
+            total_visited=0
+            for news_id,num_visited in news_history.items():
+                try:
+                    news_category=News.objects.get(id=news_id).category.id
+                    category_count[news_category]['count']+=int(num_visited)
+                    total_visited+=int(num_visited)
+                except Exception as e:
+                    print(e)
+            for category in category_count.keys():
+                category_count[category]['grade']=int(10*(category_count[category]['count']/category_count[category]['total']))+int(90*(category_count[category]['count']/total_visited))
+            self.usercharacters.news_categroy_Poi=json.dumps(category_count)
+            self.usercharacters.save()
+
+    #根据新闻种类偏好计算类似用户    
+    def calculate_similar_users(self)->None:
+        similar_users={'similar':[],'differ':[]}
+        try:
+            news_categroy_Poi_me=json.loads(self.usercharacters.news_categroy_Poi)
+            for a_usercharacters in UserCharacters.objects.all():
+                cosine_similarity_part1,cosine_similarity_part2,cosine_similarity_part3=0,0,0
+                news_categroy_Poi_other=json.loads(a_usercharacters.news_categroy_Poi)
+                for category in Category.objects.all():
+                    category_id=str(category.id)
+                    cosine_similarity_part1+=news_categroy_Poi_me[category_id]['grade']*news_categroy_Poi_other[category_id]['grade']
+                    cosine_similarity_part2+=news_categroy_Poi_me[category_id]['grade']*news_categroy_Poi_me[category_id]['grade']
+                    cosine_similarity_part3+=news_categroy_Poi_other[category_id]['grade']*news_categroy_Poi_other[category_id]['grade']
+                cosine_similarity=cosine_similarity_part1/(math.pow(cosine_similarity_part2,0.5)*math.pow(cosine_similarity_part3,0.5))
+                if cosine_similarity>0.6:
+                    similar_users['similar'].append(str(a_usercharacters.user.uid))
+                elif cosine_similarity<-0.4:
+                    similar_users['differ'].append(str(a_usercharacters.user.uid))
+            print("kkkalsd")
+            self.usercharacters.similar_users=json.dumps(similar_users)
+            self.usercharacters.save()
+        except Exception as e:
+            print(e)
+
+
+#入口，启动用户特征的计算
+def calculate_usercharacters():
+    for user in User.objects.all():
+        try:
+            upc=UserPoiCalculate(user=user)
+            upc.calculate_news_keyword()
+            upc.calculate_Poi()
+            import time
+            time.sleep(1)
+            upc.calculate_similar_users()
+            print('{}的用户模型已计算成功'.format(user.username))
+        except Exception as e:
+            print('{},错误:{}'.format(user.username,str(e))) 
 

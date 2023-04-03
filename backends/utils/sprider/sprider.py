@@ -126,8 +126,8 @@ class Web_Sprider:
                 else:
                     if DEBUG:
                         print("出错！请检查解析规则或数据")
-            if not DEBUG:
-                progressbar(count,len(self.categroy_list),'解析{}新闻详情页获取新闻详情'.format(self.name),30)
+                if not DEBUG:
+                    progressbar(count,len(self.categroy_list),'解析{}新闻详情页获取新闻详情'.format(self.name),30)
             count+=1
         import pandas
         news_csv=pandas.DataFrame(news,columns=["title","category","passage","news_from","url"])
@@ -193,8 +193,8 @@ class Web_Sprider:
                 else:
                     if DEBUG:
                         print("-----网页爬取失败-----")
-            if not DEBUG:
-                progressbar(count,len(self.categroy_list),'解析{}新闻详情页获取新闻详情'.format(self.name),30)
+                if not DEBUG:
+                    progressbar(count,len(self.categroy_list),'解析{}新闻详情页获取新闻详情'.format(self.name),30)
             count+=1
             self.news_detail_dict[keyword]=news_detail_list
 
@@ -292,5 +292,5 @@ class main:
                 web_sprider=Web_Sprider(url=target["url"],name=target["name"],example=target["example"],categroy=target["categroy"],categroy_num_list=target["categroy_num_list"])
                 web_sprider.main()
 
-test=main()
-test.main()
+# test=main()
+# test.main()

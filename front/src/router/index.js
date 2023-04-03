@@ -7,6 +7,7 @@ import Login from '@/views/login/Login.vue'
 import Detail from '@/views/detail/Detail.vue'
 import Category from '@/views/categroy/Category.vue'
 import Search from '@/views/search/Search.vue'
+import UserCenter from '@/views/usercenter/UserCenter.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -43,6 +44,24 @@ const routes = [
     path:'/category/:category_id',
     name:'news_category',
     component:Category,
+  },
+  {
+    path:'/usercenter',
+    name:'usercenter',
+    component:UserCenter,
+    children:[
+      {
+        path:'',
+        name:'userinfo_show',
+        component:()=>import('@/views/usercenter/Userinfo_show.vue'),
+        alias:'userinfo_show',
+      },
+      {
+        path:'userinfo_change',
+        name:'userinfo_change',
+        component:()=>import('@/views/usercenter/Userinfo_change.vue')
+      }
+    ],
   },
   {
     path: '/*', 

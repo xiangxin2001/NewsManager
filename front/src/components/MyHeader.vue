@@ -48,7 +48,7 @@
       <div class="right_header" v-show="logined" style="width: auto;">
       <el-submenu index="4">
          <template slot="title"><div><i class="el-icon-user-solid" style="display: inline-block;"></i><span style="display: inline-block;">{{ username }}</span></div></template>
-            <el-menu-item index="4-1"><a href="#" target="_self"><div>用户中心</div></a></el-menu-item>
+            <el-menu-item index="4-1"><a href="/usercenter" target="_self"><div>用户中心</div></a></el-menu-item>
             <el-menu-item index="4-2"><a href="#" target="_self" @click='logout'><div>退出登录</div></a></el-menu-item>
       </el-submenu>
       </div>

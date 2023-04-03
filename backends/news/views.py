@@ -3,7 +3,8 @@ from .models import News,Category,NewsCharacters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import pandas
-from jieba import analyse
+
+from user.models import UserCharacters,User
 # Create your views here.
 #爬取的新闻入库
 def Sprider_data_in():
@@ -35,11 +36,19 @@ def Sprider_data_in():
                 else:
                     if DEBUG:
                         print("数据重复")
-            if not DEBUG:
-                total=len(target_list)
-                barlen=30
-                print('\r{}[{}]{}/{}'.format('新闻数据入库','*'*(count*barlen//total)+'-'*(barlen-count*barlen//total),count,total),end='')
+                if not DEBUG:
+                    total=len(target_list)
+                    barlen=30
+                    print('\r{}[{}]{}/{}'.format('新闻数据入库', '*'*(count*barlen//total)+'-'*(barlen-count*barlen//total),count,total),end='')
+            count+=1
+            
         News.objects.filter(passage='nan').delete()
+        #计算各种类的新闻数量
+        for category in Category.objects.all():
+            category.newsnum=News.objects.filter(category=category).count()
+            category.save()
+
+        print("\n新闻获取成功") 
 
 
 
@@ -48,21 +57,39 @@ def Sprider_data_in():
 # test=News.objects.get(title="春来水暖鸟先知")
 # print(test.passage)
 #新闻详情获取API
-
+import json
 class News_detailAPI(APIView):
     def get(self,request,news_id):
         news_id=int(news_id)
         try:
             news=News.objects.get(id=news_id)
             if news:
-                NewsCharacters.get(news=news).visited+=1
+                newsc=NewsCharacters.objects.get(news=news)
+                newsc.visited+=1
+                newsc.save()
+                try:
+                    if User.objects.get(username=request.user.username):
+                        usercharacters=UserCharacters.objects.get(user=User.objects.get(username=request.user.username))
+                        if usercharacters.news_history:
+                            news_history=json.loads(usercharacters.news_history)
+                        else:
+                            news_history={}
+                        news_id=str(news_id)
+                        if news_id in news_history:
+                            news_history[news_id]+=1
+                        else:
+                            news_history[news_id]=1
+                        usercharacters.news_history=json.dumps(news_history)
+                        usercharacters.save()
+                except Exception as e:
+                    print(e)
                 news_info={
                     "title":news.title,
                     "category":str(news.category.id),
                     "passage":str(news.passage),
                     "news_from":news.news_from,
                     "url":news.url,
-                    "visited":NewsCharacters.get(news=news).visited,
+                    "visited":newsc.visited,
                     "breadcrumb":{"首页":"/",str(news.category.name):"/category/{}".format(news.category.id),news.title:"/detail/{}".format(news_id)}
                 }
 
@@ -149,7 +176,7 @@ class NewsSearchView(SearchView):
      
         return JsonResponse(result_json,safe=False)
      
-
+from jieba import analyse
 #已有新闻特征建模函数
 def NewsCharacterforowned():
     news_list=News.objects.all()

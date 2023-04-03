@@ -68,9 +68,10 @@ class UserModelSerializer(ModelSerializer):
 from utils.models import BaseModel
 class UserCharacters(BaseModel):
     user=models.ForeignKey('User',on_delete=models.CASCADE,verbose_name='用户')
-    news_categroy=models.CharField(max_length=50,blank=True,null=True,verbose_name='用户浏览新闻类别')
-    news_keyword=models.CharField(max_length=200,blank=True,null=True,verbose_name='用户浏览新闻关键词')
-    news_histroy=models.TextField(blank=True,null=True,verbose_name='用户浏览新闻记录')
+    news_categroy_Poi=models.TextField(blank=True,null=True,verbose_name='用户感兴趣新闻类别信息')#每个类别兴趣总分100
+    news_keyword=models.TextField(blank=True,null=True,verbose_name='用户浏览新闻关键词')
+    news_history=models.TextField(blank=True,null=True,verbose_name='用户浏览新闻记录')
+    similar_users=models.TextField(blank=True,null=True,verbose_name='相似用户')
     class Meta:
         db_table = 'tb_usercharacters'
         verbose_name='用户特征'
