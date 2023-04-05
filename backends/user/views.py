@@ -5,7 +5,8 @@ from utils.view import LoginRequiredJSONMixin
 from .models import User,UserModelSerializer,UserCharacters
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+from news.models import News,NewsCharacters,Category
+import json
 #检查用户名是否已存在
 class usernameCountAPI(APIView):
 
@@ -131,7 +132,7 @@ class userloginAPI(APIView):
                 return Response({'code':400,'errmsg':'AnonymousUser','logined':False})
         except Exception as e:
             print(e)
-            return Response({'code':400,'errmsg':e,'logined':False})
+            return Response({'code':400,'errmsg':str(e),'logined':False})
 
 
 #用户退出API
@@ -145,14 +146,25 @@ class logoutAPI(APIView):
         return response
 
 
-#用户中心进入API
-class centerViewAPI(LoginRequiredJSONMixin,APIView):
+#用户中心用户信息获取
+class userinfoViewAPI(LoginRequiredJSONMixin,APIView):
 
     def get(self,request):
-        user=request.user
-        info=UserModelSerializer(instance=user)
-        
-        return Response({'code':0,'errmsg':'ok','info_data':info.data})
+        try:
+            user=request.user
+            info=UserModelSerializer(instance=user)
+            history_list=json.loads(UserCharacters.objects.get(user=User.objects.get(username=user.username)).news_history)
+            news_list=[]
+            for news_id,num_visited in history_list.items():
+                a_news={}
+                news=News.objects.get(id=news_id)
+                a_news['title']=news.title
+                a_news['url']="/detail/{}".format(news.id)
+                a_news['visited']=str(num_visited)
+                news_list.append(a_news)
+            return Response({'code':0,'errmsg':'ok','userinfo':info.data,'news_list':news_list})
+        except Exception as e:
+            return Response({'code':500,'errmsg':str(e)})
 
 
 #用户修改密码
@@ -178,8 +190,7 @@ class passwordChangeAPI(APIView):
 # else:
 #     User.objects.filter(username=name).delete()
 #     User.objects.create_superuser(username=name,password='lxb331047471a',email='2868308648@qq.com',mobile='15397008302')
-import json
-from news.models import News,NewsCharacters,Category
+
 from jieba import analyse
 import math
 class UserPoiCalculate:

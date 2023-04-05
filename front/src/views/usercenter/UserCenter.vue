@@ -32,6 +32,15 @@ export default {
         return{
 
         }
+    
+    },
+    create(){
+        if(window.sessionStorage.getItem('logined')==undefined){
+            alert("请先登录");
+            this.$router.push({
+                path:"/",
+                });
+        }
     },
     methods:{
         handleSelect(key) {
@@ -58,16 +67,19 @@ export default {
     height: 100%;
 };
 .slide{
-    width: 14%;
+    position: absolute;
+    width: 15%;
     height: auto;
     display: inline-block;
+    margin-top: 0px;
    
 }
 .main{
-    width: 86%;
-    height: auto;
-    display: inline-flex;
-    border: 1px solid #030303;;
+    width: 85%;
+    height:500px;
+    display: inline-block;
+    position: relative;
+    left: 15%;
 }
 .el-menu{
     width: 100%;
@@ -94,6 +106,6 @@ export default {
     }  
 }
 .el-menu-item.is-active {
-    color: #0267cb;
+    color: #0267cb!important;
 }
 </style>
