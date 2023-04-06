@@ -56,5 +56,5 @@
   margin-top: 8%;
   margin-bottom: auto;
   }
-  
-  </style>
+
+</style>

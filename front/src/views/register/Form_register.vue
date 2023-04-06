@@ -238,4 +238,20 @@ div{
   }
 
 }
+/deep/.el-input__inner{
+    border: 2px solid #737377;
+    margin-top: 5px;
+}
+/deep/.el-input .el-input__inner::placeholder {
+    color:rgba(0,0,0, 0.7);
+}
+
+.el-button--primary{
+    background-color:rgba(0,0,255,0.5);
+    border-color:rgba(0,0,255,0.5);
+}
+.el-button:not(.el-button--primary) {
+    background-color:rgba(255,255,255,0.8);
+    border-color:rgba(255,255,255,0.8);
+}
 </style>

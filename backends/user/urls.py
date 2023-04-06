@@ -17,5 +17,9 @@ urlpatterns = [
     path('login/userlogin/',views.userloginAPI.as_view()),
     path('logout/',views.logoutAPI.as_view()),
     path('userinfo/',views.userinfoViewAPI.as_view()),
-    path('password/',views.passwordChangeAPI.as_view()),
+    path('userinfo/password/',views.passwordChangeAPI.as_view()),
+    path('userinfo/username/',views.usernameChangeAPI.as_view()),
+    path('userinfo/mobile/',views.mobileChangeAPI.as_view()),
+    path('userinfo/email/',views.emailChangeAPI.as_view()),
+    path('userinfo/reset/',views.resetAPI.as_view()),
 ]

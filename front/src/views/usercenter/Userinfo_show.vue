@@ -13,7 +13,7 @@
         <h3>新闻浏览历史</h3>
         <div class="list_box">
         <ul v-for="(news,i) in news_list" :key="i" class="news_list">
-        <li><span class="news_box"><a :href="news.url">{{ news.title }}</a></span><span class="visited">浏览量:{{news.visited }}</span></li>
+        <li><span class="news_box"><a :href="news.url">{{ news.title }}</a></span><span class="visited">浏览次数:{{news.visited }}</span></li>
         </ul>
         </div>
     </div>
@@ -49,8 +49,6 @@
                     this.userinfo.email=res.data.userinfo.email;
                     this.userinfo.uid=res.data.userinfo.uid;
                     this.news_list=res.data.news_list;
-                    console.log(this.news_list)
-                    console.log(this.userinfo)
                 }else{
                     console.log(res.data.errmsg);
                 }
@@ -71,19 +69,28 @@
     *{
         background-color: rgba(255,255,255,0.5);
     }
-    h3{
-        font-weight: 530;
-        margin: 5px;
-    };
+    
     .userinfo{
         margin-top: 0%;
         width: 100%;
         height: auto;
         text-decoration-style: dashed;
+        background-color: transparent!important;
+        h3{
+        font-weight: 530;
+        margin-top: 0px;
+        margin-bottom: 0px;
+        };
         
-        *{
+        ul{
+            background-color: transparent!important;
+            margin-top: 15px;
+            margin-bottom: 0px;
+            *{
             background-color: transparent!important;
             margin-bottom: 15px;
+            }
+           
         }
         li{
             text-decoration: none;
@@ -117,11 +124,15 @@
 }
     .history{
         width: 100%;
-        
+        h3{
+        font-weight: 530;
+        margin-top: 0px;
+        margin-bottom: 5px;
+        };
         .list_box{
             overflow-x: hidden;
             overflow-y: auto;
-            height: 267px;
+            height: 283px;
             background-color: transparent!important;
             *{
                 background-color: transparent!important;

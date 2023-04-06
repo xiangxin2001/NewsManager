@@ -85,12 +85,14 @@
          })
          .then(res=>{
             if(res.data.code==0){
-               console.log("55")
                window.sessionStorage.removeItem('logined');
                window.sessionStorage.removeItem('username');
                this.username="";
                this.logined=false;
                this.reg_and_login=true;
+               this.$router.push({
+                  path:'/',
+               });
             }
          })
          .catch(err=>{
@@ -203,4 +205,12 @@
       margin-right: 0px;
       float:right;
    }
+/deep/.el-input__inner{
+  border: 1px solid #737377;
+  margin-top: -4px;
+}
+/deep/.el-input .el-input__inner::placeholder {
+  color:rgba(0,0,0, 0.5);
+}
+
 </style>

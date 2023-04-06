@@ -11,6 +11,7 @@
  <div v-html="news.passage" class="passageshow"></div>
  <div class="passagefoot">
     <p>来源：{{news.news_from}}</p>
+    <p>浏览量：{{ news.visited }}</p>
     <div><a :href="news.url" target="_blank">查看源网页</a></div>
  </div>
  
@@ -30,9 +31,10 @@
                 passage:"",
                 news_from:"",
                 url:"",
-                breadcrumb:{},
-                data_not_loaded:true,
-            }
+                visited:"",
+            },
+            breadcrumb:{},
+            data_not_loaded:true,
         }
     },
     methods:{
@@ -51,7 +53,8 @@
                 this.news.passage=res.data.news.passage;
                 this.news.news_from=res.data.news.news_from;
                 this.news.url=res.data.news.url;
-                this.breadcrumb=res.data.news.breadcrumb
+                this.breadcrumb=res.data.news.breadcrumb;
+                this.news.visited=res.data.news.visited;
             }else{
                 console.log(res.data.errmsg);
                 this.$router.push({

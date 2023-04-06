@@ -90,7 +90,8 @@ class News_detailAPI(APIView):
                     "news_from":news.news_from,
                     "url":news.url,
                     "visited":newsc.visited,
-                    "breadcrumb":{"首页":"/",str(news.category.name):"/category/{}".format(news.category.id),news.title:"/detail/{}".format(news_id)}
+                    "breadcrumb":{"首页":"/",str(news.category.name):"/category/{}".format(news.category.id),news.title:"/detail/{}".format(news_id)},
+                    "visited":str(newsc.visited)
                 }
 
                 return Response({"code":0,"errmsg":"ok","news":news_info})

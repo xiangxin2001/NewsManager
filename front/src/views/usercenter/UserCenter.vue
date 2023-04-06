@@ -4,7 +4,7 @@
         <el-main>
             <div class="slide">
                 <el-menu
-                default-active="1"
+                :default-active=default_active
                 class="el-menu-vertical-demo"
                 @select="handleSelect">
                 <el-menu-item index="1">
@@ -30,16 +30,22 @@ export default {
     },
     data(){
         return{
-
+            default_active:'',
         }
     
     },
-    create(){
-        if(window.sessionStorage.getItem('logined')==undefined){
+    mounted(){
+        if(window.sessionStorage.getItem('logined')==undefined||window.sessionStorage.getItem('logined')==false){
+            console.log('ll')
             alert("请先登录");
             this.$router.push({
                 path:"/",
                 });
+        }
+        if(window.location.pathname=='/usercenter/userinfo_change'){
+            this.default_active='2';
+        }else{
+            this.default_active='1';
         }
     },
     methods:{

@@ -153,43 +153,109 @@ class userinfoViewAPI(LoginRequiredJSONMixin,APIView):
         try:
             user=request.user
             info=UserModelSerializer(instance=user)
-            history_list=json.loads(UserCharacters.objects.get(user=User.objects.get(username=user.username)).news_history)
-            news_list=[]
-            for news_id,num_visited in history_list.items():
-                a_news={}
-                news=News.objects.get(id=news_id)
-                a_news['title']=news.title
-                a_news['url']="/detail/{}".format(news.id)
-                a_news['visited']=str(num_visited)
-                news_list.append(a_news)
-            return Response({'code':0,'errmsg':'ok','userinfo':info.data,'news_list':news_list})
+            flag=True
+            try:
+                history_list=json.loads(UserCharacters.objects.get(user=user).news_history)
+            except Exception as e:
+                print(e)
+                flag=False
+            if flag:
+                news_list=[]
+                for news_id,num_visited in history_list.items():
+                    a_news={}
+                    news=News.objects.get(id=news_id)
+                    a_news['title']=news.title
+                    a_news['url']="/detail/{}".format(news.id)
+                    a_news['visited']=str(num_visited)
+                    news_list.append(a_news)
+                return Response({'code':0,'errmsg':'ok','userinfo':info.data,'news_list':news_list})
+            else:
+                return Response({'code':0,'errmsg':'ok','userinfo':info.data,'news_list':[{'title':'暂无浏览新闻的记录','url':'#','visited':'0'}]})
         except Exception as e:
             return Response({'code':500,'errmsg':str(e)})
 
 
 #用户修改密码
 class passwordChangeAPI(APIView):
-    def put(self,request):
-        user=request.user
-        data = request.data
-        old_password=data.get('old_password')
-        new_password=data.get('new_password')
-        new_cpassword=data.get('new_password2')
-        if not user.check_password(old_password):
-            return Response({"code":400,"errmsg":"Inconrent password"})
-        if new_cpassword!=new_password:
-            return Response({"code":400,"errmsg":"Inconrent data"})
+    def post(self,request):
+        try:
+            user=request.user
+            data = request.data
+            old_password=data.get('old_password')
+            new_password=data.get('new_password')
+            new_cpassword=data.get('new_password2')
+            if not user.check_password(old_password):
+                return Response({"code":400,"errmsg":"Inconrent password"})
+            if new_cpassword!=new_password:
+                return Response({"code":400,"errmsg":"Inconrent data"})
 
-        user.set_password(new_password)
-        user.save()
-        return Response({'code':0,'errmsg':'ok'}).delete_cookie('username')
+            user.set_password(new_password)
+            user.save()
+            return Response({'code':0,'errmsg':'ok'}).delete_cookie('username')
+        except Exception as e:
+            return Response({"code":400,"errmsg":str(e)})
+#用户修改用户名
+class usernameChangeAPI(APIView):
+    def post(self,request):
+        try:
+            user=request.user
+            data = request.data
+            username=data.get('username')
+            user.username=username
+            user.save()
+            response=Response({'code':0,'errmsg':'ok','username':username})
+            username=username.encode(encoding='utf-8')
+            response.set_cookie('username',username,samesite="None",secure=True)
+            return response
+        except Exception as e:
+            return Response({"code":400,"errmsg":str(e)})
 
-# name='秋沐川'
-# if  not User.objects.filter(username=name):
-#     User.objects.create_superuser(username=name,password='lxb331047471a',email='2868308648@qq.com',mobile='15397008302')
-# else:
-#     User.objects.filter(username=name).delete()
-#     User.objects.create_superuser(username=name,password='lxb331047471a',email='2868308648@qq.com',mobile='15397008302')
+#用户修改手机号
+class mobileChangeAPI(APIView):
+    def post(self,request):
+        try:
+            user=request.user
+            data = request.data
+            mobile=data.get('mobile')
+            user.mobile=mobile
+            user.save()
+            return Response({'code':0,'errmsg':'ok'})
+        except Exception as e:
+            return Response({"code":400,"errmsg":str(e)})
+        
+#用户修改邮箱
+class emailChangeAPI(APIView):
+    def post(self,request):
+        try:
+            user=request.user
+            data = request.data
+            email=data.get('email')
+            user.email=email
+            user.save()
+            return Response({'code':0,'errmsg':'ok'})
+        except Exception as e:
+            return Response({"code":400,"errmsg":str(e)})
+#用户修改用户个性化数据
+class resetAPI(APIView):
+    def post(self,request):
+        try:
+            user=request.user
+            data = request.data
+            password=data.get('password')
+            if not user.check_password(password):
+                return Response({"code":400,"errmsg":"Inconrent password"})
+            userc=UserCharacters.objects.get(user=user)
+            userc.news_categroy_Poi=''
+            userc.news_history=''
+            userc.news_keyword=''
+            userc.similar_users=''
+            userc.save()
+            return Response({'code':0,'errmsg':'ok'})
+        except Exception as e:
+            return Response({"code":400,"errmsg":str(e)})
+
+
+
 
 from jieba import analyse
 import math
