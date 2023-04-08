@@ -12,6 +12,6 @@ axios.interceptors.request.use(config => {
     return config
   }, err => {
     // 请求未成功发出
-    return Promise.reject(err)
+    return Promise.reject(err);
   })
-Vue.use(VueAxios, axios) 
+Vue.use(VueAxios, axios);

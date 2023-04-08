@@ -1,6 +1,6 @@
 <template>
  <div>
-    <div class="userinfo">
+    <div class="userinfo" v-loading="loading" element-loading-background="rgba(255, 255, 255,0)" element-loading-text="正在加载中">
         <h3>用户信息</h3>
         <ul>
             <label>用户名：</label><li>{{userinfo.username}}</li><br/>
@@ -9,7 +9,7 @@
             <label>uid:</label><li>{{ userinfo.uid }}</li><br/>
         </ul>
     </div>
-    <div class="history">
+    <div class="history" v-loading="loading" element-loading-background="rgba(255, 255, 255,0)" element-loading-text="正在加载中">
         <h3>新闻浏览历史</h3>
         <div class="list_box">
         <ul v-for="(news,i) in news_list" :key="i" class="news_list">
@@ -34,6 +34,7 @@
                 uid:'',
             },
             news_list:[],
+            loading:true,
         }
     },
     created(){
@@ -49,12 +50,12 @@
                     this.userinfo.email=res.data.userinfo.email;
                     this.userinfo.uid=res.data.userinfo.uid;
                     this.news_list=res.data.news_list;
+                    this.loading=false;
                 }else{
                     console.log(res.data.errmsg);
                 }
             })
             .catch(err=>{
-                alert('服务器错误');
                 console.log(err);
             })
         }
@@ -107,7 +108,6 @@
     };
 ::-webkit-scrollbar {
     width: 10px;
-    // height: 10px; // 高度写不写，都不影响，因为会根据内容的长度自动计算
 }
 
 ::-webkit-scrollbar-thumb {
@@ -116,7 +116,7 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(245, 44, 242, 0.519); // 鼠标移入滑块变红
+    background: rgba(245, 44, 242, 0.519);
 }
 ::-webkit-scrollbar-track {
     border-radius: 5px; // 轨道圆角
@@ -137,7 +137,6 @@
             *{
                 background-color: transparent!important;
             }
-            /* 整个滚动条背景 */
             
 
         }

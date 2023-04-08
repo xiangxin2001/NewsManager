@@ -131,7 +131,6 @@ class News_categoryAPI(APIView):
             else:
                 return Response({"code":400,"errmsg":"categoryDoNotExist"})
         except Exception as e:
-            print(e)
             return Response({"code":400,"errmsg":str(e)})
 
 #新闻搜索API
@@ -189,5 +188,28 @@ def NewsCharacterforowned():
             keywords=','.join(keyword_list)
             NewsCharacters.objects.create(news=news,keywords=keywords)
 
-
+#获取最新新闻
+class LatestNewsAPI(APIView):
+    def get(self,request):
+        try:
+            category=Category.objects.all()
+            category_dict={}
+            news_dict={}
+            for cat in category:
+                category_dict[cat.id]=cat.name
+                try:
+                    news_list=News.objects.filter(category=cat.id).order_by("-create_time")[:10]
+                    latest_news_list=[]
+                    for news in news_list:
+                        latest_news_list.append({
+                            "title":news.title,
+                            "url":"/detail/{}".format(news.id),
+                            })
+                except Exception as e:
+                    print(e)
+                    latest_news_list=[]
+                news_dict[cat.id]=latest_news_list
+            return Response({"code":0,"errmsg":'ok','latest_news':news_dict,'category':category_dict})
+        except Exception as e:
+            return Response({"code":400,"errmsg":str(e)})
 
