@@ -3,7 +3,7 @@ from .models import News,Category,NewsCharacters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import pandas
-
+import datetime
 from user.models import UserCharacters,User
 # Create your views here.
 #爬取的新闻入库
@@ -116,7 +116,7 @@ class News_categoryAPI(APIView):
                 else:
                     news_list=news_list[pagesize*(page-1):total]
                 for news in news_list:
-                    time=news.create_time.strftime(r"%Y-%m-%d")
+                    time=(news.create_time+datetime.timedelta(hours=8)).strftime(r"%Y-%m-%d")
                     time=time.split('-')
                     timestr="{}年{}月{}日".format(time[0],time[1],time[2])
                     news_info={
@@ -154,7 +154,7 @@ class NewsSearchView(SearchView):
         obj_list.sort(reverse=True,key=attrgetter("create_time"))
         for news_obj in obj_list:
             try:
-                time=news_obj.create_time.strftime(r"%Y-%m-%d")
+                time=(news_obj.create_time).strftime(r"%Y-%m-%d")
                 time=time.split('-')
                 timestr="{}年{}月{}日".format(time[0],time[1],time[2])
                 news_list.append({
@@ -210,6 +210,22 @@ class LatestNewsAPI(APIView):
                     latest_news_list=[]
                 news_dict[cat.id]=latest_news_list
             return Response({"code":0,"errmsg":'ok','latest_news':news_dict,'category':category_dict})
+        except Exception as e:
+            return Response({"code":400,"errmsg":str(e)})
+
+#获取热点新闻
+
+class HotNewsAPI(APIView):
+    def get(self,request):
+        try:
+            hot_news=[]
+            newsc_list=NewsCharacters.objects.filter(news__create_time__gt=datetime.datetime.now()-datetime.timedelta(days=3,hours=8)).order_by('-visited','-news__create_time')[:20]
+            for newsc in newsc_list:
+                hot_news.append({
+                    "title":newsc.news.title,
+                    "url":"/detail/{}".format(newsc.news.id),
+                    })
+            return Response({"code":0,"errmsg":'ok','hot_news':hot_news})
         except Exception as e:
             return Response({"code":400,"errmsg":str(e)})
 

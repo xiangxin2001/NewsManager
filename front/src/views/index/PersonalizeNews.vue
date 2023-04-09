@@ -2,7 +2,7 @@
     <div v-loading="loading" element-loading-background="rgba(255, 255, 255, 0.3)" element-loading-text="正在加载中">
         <ul  class="infinite-list" v-infinite-scroll="load" style="overflow:auto">
             <li v-for="(news,i) in personalize_news" :key="i" class="infinite-list-item">
-                <span class="time">{{ news.time }}</span><span class="news_box"><a :href="news.url">{{ news.title }}</a></span>
+                <span class="time">{{ news.time }}.</span><span class="news_box"><a :href="news.url">{{ news.title }}</a></span>
             </li>
         </ul>
     </div>
@@ -24,7 +24,7 @@ export default {
         .then(res=>{
             if(res.data.code==0){
                 this.loading=false;
-                this.personalize_news-res.data.personalize_news;
+                this.personalize_news=res.data.personalize_news;
             }else{
                 console.log(res.data.errmsg);
             }
@@ -73,7 +73,7 @@ div{
         font-size:22px;
         position: relative;
         padding-left: 20px;
-
+        
         ::before {
             content: "";
             position: absolute;

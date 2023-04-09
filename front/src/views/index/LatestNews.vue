@@ -1,18 +1,23 @@
 <template>
  <div v-loading="loading" element-loading-background="rgba(255, 255, 255, 0.3)" element-loading-text="正在加载中">
     <div class="category">
-        <el-menu
-            v-for="(catname,id) in category" :key="id"
-            mode="horizontal"
-            :default-active=default_active
-            class="el-menu-demo"
-            @select="load_news">
-            <el-menu-item :index="id">
-                <span >{{catname}}</span>
-            </el-menu-item>
-        </el-menu>
-        
+        <span class="column_title">
+            <h1>今日新闻</h1>
+        </span>
+        <span class="category_menu">
+            <el-menu
+                v-for="(catname,id) in category" :key="id"
+                mode="horizontal"
+                :default-active=default_active
+                class="el-menu-demo"
+                @select="load_news">
+                <el-menu-item :index="id">
+                    <span >{{catname}}</span>
+                </el-menu-item>
+            </el-menu>
+        </span>
     </div>
+    
     <div class="news_container">
         <div class="left">
         <ul v-for="(news,i) in news_list1" :key="i" class="news_list">
@@ -94,7 +99,25 @@
     width: 100%;
     height: 20%;
     display: inline-block;
+    .column_title{
+        width: 20%;
+        height: 100%;
+        text-align: center center;
+        
+        position:absolute;
+        display: inline-block;
+        margin-left: 2%;
+    }
+    .category_menu{
+        margin-left: 12%;
+        width: 80%;
+        height: 100%;
+        position: relative;
+        display: inline-block;
+    }
 }
+
+
 .news_container{
     width: 100%;
     height: 79%;
@@ -142,7 +165,7 @@
             color: #030303;
         }
     }
-};
+}
   
 /deep/.el-menu::after, .el-menu::before {
     position: absolute;
@@ -151,5 +174,9 @@
 }
 /deep/.el-menu.el-menu--horizontal{
     border: 0px;
+}
+/deep/.el-menu--horizontal>.el-menu-item{
+    font-size: medium;
+    font-weight: 600;
 }
 </style>

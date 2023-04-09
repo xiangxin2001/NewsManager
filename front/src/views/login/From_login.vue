@@ -1,16 +1,16 @@
 <template>
- <div class="login_form">
+ <div class="login_form" >
     <el-form :model="loginruleForm" status-icon :rules="rules" ref="loginruleForm" label-width="100px" class="demo-loginruleForm">
                 <el-form-item >
                     <div class="login_pic"></div>
                 </el-form-item>
-                <el-form-item label="用户名" prop="username">
+                <el-form-item label="用户名" prop="username" @keyup.enter.native="submitForm('loginruleForm')">
                     <el-input v-model="loginruleForm.username"></el-input>
                 </el-form-item>
-                <el-form-item label="密码" prop="password">
+                <el-form-item label="密码" prop="password" @keyup.enter.native="submitForm('loginruleForm')">
                     <el-input type="password" v-model="loginruleForm.password" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item prop="remember">
+                <el-form-item prop="remember" @keyup.enter.native="submitForm('loginruleForm')">
                     <el-checkbox v-model="loginruleForm.remember">保持登录</el-checkbox>
                 </el-form-item>
                 <el-form-item>

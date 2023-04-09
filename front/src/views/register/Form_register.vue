@@ -1,22 +1,22 @@
 <template>
   
   <div ><el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-  <el-form-item label="用户名" prop="username">
+  <el-form-item label="用户名" prop="username" @keyup.enter.native="submitForm('ruleForm')">
     <el-input v-model="ruleForm.username"></el-input>
   </el-form-item>
-  <el-form-item label="密码" prop="password">
+  <el-form-item label="密码" prop="password" @keyup.enter.native="submitForm('ruleForm')">
     <el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
   </el-form-item>
-  <el-form-item label="确认密码" prop="checkPassword">
+  <el-form-item label="确认密码" prop="checkPassword" @keyup.enter.native="submitForm('ruleForm')">
     <el-input type="password" v-model="ruleForm.checkPassword" autocomplete="off"></el-input>
   </el-form-item>
-  <el-form-item label="手机号" prop="mobile">
+  <el-form-item label="手机号" prop="mobile" @keyup.enter.native="submitForm('ruleForm')">
     <el-input v-model="ruleForm.mobile"></el-input>
   </el-form-item>
-  <el-form-item label="邮箱" prop="email">
+  <el-form-item label="邮箱" prop="email" @keyup.enter.native="submitForm('ruleForm')">
     <el-input v-model="ruleForm.email"></el-input>
   </el-form-item>
-  <el-form-item prop="allow">
+  <el-form-item prop="allow" @keyup.enter.native="submitForm('ruleForm')">
   <el-checkbox v-model="ruleForm.allow">同意《纽斯新闻（本站）用户协议》</el-checkbox>
   </el-form-item>
   <el-form-item>

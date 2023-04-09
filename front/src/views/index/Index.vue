@@ -69,7 +69,7 @@
 }
 
 .login_not_required{
-  height: 300px;
+  height: 320px;
   display: block;
   position: relative;
   .latest_news{
