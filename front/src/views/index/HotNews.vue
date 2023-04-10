@@ -58,7 +58,7 @@ export default {
     background-color: rgba(255,255,255,0.5) // 轨道颜色 
 }
 .column_title{
-    width: 100%;
+    width: 95%;
     height: 15%;
     position:relative;
     display: inline-block;

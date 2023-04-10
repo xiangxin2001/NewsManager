@@ -96,10 +96,10 @@ class News_detailAPI(APIView):
 
                 return Response({"code":0,"errmsg":"ok","news":news_info})
             else:
-                return Response({"code":400,"errmsg":"newsDoNotExist"})
+                return Response({"code":500,"errmsg":"newsDoNotExist"})
         except Exception as e:
             print(e)
-            return Response({"code":400,"errmsg":str(e)})
+            return Response({"code":500,"errmsg":str(e)})
 
 class News_categoryAPI(APIView):
     def get(self,request,category_id):
@@ -129,9 +129,9 @@ class News_categoryAPI(APIView):
                        "第{}页".format(page):"/category/{}?page={}&pagesize={}".format(category_id,page,pagesize)}
                 return Response({"code":0,"errmsg":"ok","total":total,"news_list":news_list_list, "breadcrumb":bread})
             else:
-                return Response({"code":400,"errmsg":"categoryDoNotExist"})
+                return Response({"code":500,"errmsg":"categoryDoNotExist"})
         except Exception as e:
-            return Response({"code":400,"errmsg":str(e)})
+            return Response({"code":500,"errmsg":str(e)})
 
 #新闻搜索API
 from haystack.views import SearchView
@@ -211,7 +211,7 @@ class LatestNewsAPI(APIView):
                 news_dict[cat.id]=latest_news_list
             return Response({"code":0,"errmsg":'ok','latest_news':news_dict,'category':category_dict})
         except Exception as e:
-            return Response({"code":400,"errmsg":str(e)})
+            return Response({"code":500,"errmsg":str(e)})
 
 #获取热点新闻
 
@@ -227,5 +227,93 @@ class HotNewsAPI(APIView):
                     })
             return Response({"code":0,"errmsg":'ok','hot_news':hot_news})
         except Exception as e:
-            return Response({"code":400,"errmsg":str(e)})
+            return Response({"code":500,"errmsg":str(e)})
 
+#个性化推荐(一次20条)
+from django_redis import get_redis_connection
+class PersonalizeNewsAPI(APIView):
+    def mySerializer(self,news)->dict:
+        time=(news.create_time+datetime.timedelta(hours=8)).strftime(r"%Y-%m-%d")
+        time=time.split('-')
+        timestr="{}年{}月{}日".format(time[0],time[1],time[2])
+        return{
+                "title":news.title,
+                "url":"/detail/{}".format(news.id),
+                "time":timestr
+                }
+    def get(self,request):
+        try:
+            personalize_news_list=[]
+            personalize_news_caches=get_redis_connection('personalize_news_caches')
+            personalize_news_caches.set(request.user.username,'')
+            pushed_news_list=[]
+            try:
+                if personalize_news_caches.get(request.user.username)=='nil' or personalize_news_caches.get(request.user.username)==None:
+                    personalize_news_caches.set(request.user.username,','.join(pushed_news_list)).set_expire(259200)
+                else:
+                    pushed_news_list=personalize_news_caches.get(request.user.username).decode('utf-8').split(',')
+            except:
+                personalize_news_caches.set(request.user.username,','.join(pushed_news_list)).set_expire(259200)
+            
+            usercharacters=UserCharacters.objects.get(user=request.user)
+            news_history_dict=json.loads(usercharacters.news_history)
+            #40%相似用户推荐
+            try:
+                count=0
+                similar_users_dict=json.loads(usercharacters.similar_users)
+                for uid in similar_users_dict['similar']:
+                    
+                    similar_userc=UserCharacters.objects.get(user=uid)
+                    similar_user_news_history_dict=json.loads(similar_userc.news_history)
+                    for news_id in similar_user_news_history_dict:
+                        
+                        if count<8:
+                            if str(news_id) not in pushed_news_list and news_id not in news_history_dict:
+                                if News.objects.get(id=news_id).create_time >= datetime.datetime.now()-datetime.timedelta(days=3,hours=8):
+                                    pushed_news_list.append(str(news_id))
+                                    personalize_news_list.append(self.mySerializer(news=News.objects.get(id=news_id)))
+                                    count+=1
+                                    
+                        else:
+                            break
+            except Exception as e:
+                print(e)
+            #50%关键词推荐
+            try:
+                count=0
+                news_keyword_list=usercharacters.news_history.split(',')
+                for a_newsc in NewsCharacters.objects.filter(news__create_time__gt=datetime.datetime.now()-datetime.timedelta(days=3,hours=8)).order_by('-create_time'):
+                    if count<10:
+                        if str(a_newsc.news.id) not in pushed_news_list and a_newsc.news.id not in news_history_dict:
+                            intersection=set(news_keyword_list).intersection(set(a_newsc.keywords.split(',')))
+                            if len(intersection) >=0:
+                                pushed_news_list.append(str(a_newsc.news.id))
+                                personalize_news_list.append(self.mySerializer(news=a_newsc.news))
+                                count+=1
+                    else:
+                        break
+            except Exception as e:
+                print(e)
+            #10%试探性推荐
+            try:
+                count=0
+                similar_users_dict=json.loads(usercharacters.similar_users)
+                for uid in similar_users_dict['differ']:
+                    differ_userc=UserCharacters.objects.get(user=uid)
+                    differ_user_news_history_dict=json.loads(differ_userc.news_history)
+                    for news_id in differ_user_news_history_dict:
+                        if count<2:
+                            if str(news_id) not in pushed_news_list and news_id not in news_history_dict:
+                                if News.objects.get(id=news_id).create_time >= datetime.datetime.now()-datetime.timedelta(days=3,hours=8):
+                                    pushed_news_list.append(str(news_id))
+                                    personalize_news_list.append(self.mySerializer(news=News.objects.get(id=news_id)))
+                                    count+=1
+                        else:
+                            break
+            except Exception as e:
+                print(e)
+
+            personalize_news_caches.set(request.user.username,','.join(pushed_news_list))
+            return Response({"code":0,"errmsg":'ok','personalize_news_list':personalize_news_list})
+        except Exception as e:
+            return Response({"code":500,"errmsg":str(e)})

@@ -1,10 +1,16 @@
 <template>
     <div v-loading="loading" element-loading-background="rgba(255, 255, 255, 0.3)" element-loading-text="正在加载中">
-        <ul  class="infinite-list" v-infinite-scroll="load" style="overflow:auto">
-            <li v-for="(news,i) in personalize_news" :key="i" class="infinite-list-item">
-                <span class="time">{{ news.time }}.</span><span class="news_box"><a :href="news.url">{{ news.title }}</a></span>
-            </li>
-        </ul>
+        <div class="column_title">
+            <h1>个性化推荐</h1>
+        </div>
+        <div class="news_container">
+            <ul  class="infinite-list" v-infinite-scroll="load" style="overflow:auto">
+                <li v-for="(news,i) in personalize_news_list" :key="i" class="infinite-list-item">
+                    <span class="time">{{ news.time }}.</span><span class="news_box"><a :href="news.url">{{ news.title }}</a></span>
+                    <!-- <span class="time">{{ news.time }}.</span><span class="news_box"><a :href="news.url">{{ news.title }}</a></span> -->
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
    
@@ -12,7 +18,7 @@
 export default {
     data(){
         return{
-            personalize_news:[],
+            personalize_news_list:[],
             loading:true,
         }
     },
@@ -24,7 +30,7 @@ export default {
         .then(res=>{
             if(res.data.code==0){
                 this.loading=false;
-                this.personalize_news=res.data.personalize_news;
+                this.personalize_news_list=res.data.personalize_news_list;
             }else{
                 console.log(res.data.errmsg);
             }
@@ -36,14 +42,14 @@ export default {
     methods:{
         load(){
             this.loading=true;
-            let url='/news/personalizenews';
+            let url='/news/personalizenews/';
             this.axios.get(url,{
                 responseType:'json',
             })
             .then(res=>{
                 if(res.data.code==0){
                     this.loading=false;
-                    this.personalize_news-res.data.personalize_news;
+                    this.personalize_news_list-res.data.personalize_news_list;
                 }else{
                     console.log(res.data.errmsg);
                 }
@@ -57,8 +63,36 @@ export default {
 </script>
    
 <style lang='less' scoped>
-div{
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ffffff; // 滑块颜色
+    border-radius: 5px; // 滑块圆角
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(245, 44, 242, 0.519);
+}
+::-webkit-scrollbar-track {
+    border-radius: 5px; // 轨道圆角
+    background-color: rgba(255,255,255,0.5) // 轨道颜色 
+}
+.column_title{
+    width: 99%;
+    height: 10%;
+    position: relative;
+    display: inline-block;
+    margin-left: 1%;
+}
+.news_container{
     width: 100%;
+    height: 90%;
+    position: relative;
+    display: inline-block;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 .infinite-list{
     display:block;
@@ -70,7 +104,7 @@ div{
     li{
         list-style:none;
         line-height: 30px;
-        font-size:22px;
+        font-size:18px;
         position: relative;
         padding-left: 20px;
         

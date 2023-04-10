@@ -41,22 +41,22 @@ class registerNewAPI(APIView):
 
         if not all([username,password,checkPassword,mobile,allow,email]):
             print([username,password,checkPassword,mobile,allow,email])
-            return Response({'code':400,'errmsg':'Incomplete parameters'})
+            return Response({'code':500,'errmsg':'Incomplete parameters'})
 
         if not 1<=len(username)<=20:
-            return Response({'code':400,'errmsg':'Incorrect username length'})
+            return Response({'code':500,'errmsg':'Incorrect username length'})
         
         if not password==checkPassword:
-            return Response({'code':400,'errmsg':'Password error'})
+            return Response({'code':500,'errmsg':'Password error'})
 
         if not re.match('1[345789]\d{9}',mobile):
-            return Response({'code':400,'errmsg':'Incorrect mobilephone number'})
+            return Response({'code':500,'errmsg':'Incorrect mobilephone number'})
 
         if not 6<=len(password)<=20:
-            return Response({'code':400,'errmsg':'Incorrect password length'})
+            return Response({'code':500,'errmsg':'Incorrect password length'})
 
         if not allow:
-            return Response({'code':400,'errmsg':'Agreement not agreed'})
+            return Response({'code':500,'errmsg':'Agreement not agreed'})
 
         #保存用户注册信息到数据库
         try:
@@ -64,7 +64,7 @@ class registerNewAPI(APIView):
            UserCharacters.objects.create(user=user_obj)
            user_obj.save()
         except Exception as e:
-            return Response({'code':400,'errmsg':str(e)})
+            return Response({'code':500,'errmsg':str(e)})
 
         return Response({'code':0,'errmsg':'ok'})
 
@@ -77,7 +77,7 @@ class userloginAPI(APIView):
         remember=data.get('remember')
 
         if not all([username,password]):
-            return Response({'code':400,'errmsg':'Incomplete parameters'})
+            return Response({'code':500,'errmsg':'Incomplete parameters'})
 
         
         #判断登录方式
@@ -91,12 +91,12 @@ class userloginAPI(APIView):
         #登录验证
         user=authenticate(username=username,password=password)
         if not user:
-            return Response({'code':400,'errmsg':'Incorrect user name or password'})
+            return Response({'code':500,'errmsg':'Incorrect user name or password'})
 
         
         #是否登录保持
         if remember:
-            request.session.set_expiry(None)
+            request.session.set_expiry(259200)
         else:
             request.session.set_expiry(0)
         
@@ -125,14 +125,14 @@ class userloginAPI(APIView):
         try:
             user=request.user
             if user.username=="AnonymousUser":
-                return Response({'code':400,'errmsg':'AnonymousUser','logined':False})
+                return Response({'code':500,'errmsg':'AnonymousUser','logined':False})
             if User.objects.get(username=user.username):
                 return Response({'code':0,'erermsg':'ok','logined':True,'username':user.username})
             else:
-                return Response({'code':400,'errmsg':'AnonymousUser','logined':False})
+                return Response({'code':500,'errmsg':'AnonymousUser','logined':False})
         except Exception as e:
             print(e)
-            return Response({'code':400,'errmsg':str(e),'logined':False})
+            return Response({'code':500,'errmsg':str(e),'logined':False})
 
 
 #用户退出API
@@ -185,15 +185,15 @@ class passwordChangeAPI(APIView):
             new_password=data.get('new_password')
             new_cpassword=data.get('new_password2')
             if not user.check_password(old_password):
-                return Response({"code":400,"errmsg":"Inconrent password"})
+                return Response({"code":500,"errmsg":"Inconrent password"})
             if new_cpassword!=new_password:
-                return Response({"code":400,"errmsg":"Inconrent data"})
+                return Response({"code":500,"errmsg":"Inconrent data"})
 
             user.set_password(new_password)
             user.save()
             return Response({'code':0,'errmsg':'ok'}).delete_cookie('username')
         except Exception as e:
-            return Response({"code":400,"errmsg":str(e)})
+            return Response({"code":500,"errmsg":str(e)})
 #用户修改用户名
 class usernameChangeAPI(APIView):
     def post(self,request):
@@ -208,7 +208,7 @@ class usernameChangeAPI(APIView):
             response.set_cookie('username',username,samesite="None",secure=True)
             return response
         except Exception as e:
-            return Response({"code":400,"errmsg":str(e)})
+            return Response({"code":500,"errmsg":str(e)})
 
 #用户修改手机号
 class mobileChangeAPI(APIView):
@@ -221,7 +221,7 @@ class mobileChangeAPI(APIView):
             user.save()
             return Response({'code':0,'errmsg':'ok'})
         except Exception as e:
-            return Response({"code":400,"errmsg":str(e)})
+            return Response({"code":500,"errmsg":str(e)})
         
 #用户修改邮箱
 class emailChangeAPI(APIView):
@@ -234,7 +234,7 @@ class emailChangeAPI(APIView):
             user.save()
             return Response({'code':0,'errmsg':'ok'})
         except Exception as e:
-            return Response({"code":400,"errmsg":str(e)})
+            return Response({"code":500,"errmsg":str(e)})
 #用户修改用户个性化数据
 class resetAPI(APIView):
     def post(self,request):
@@ -243,7 +243,7 @@ class resetAPI(APIView):
             data = request.data
             password=data.get('password')
             if not user.check_password(password):
-                return Response({"code":400,"errmsg":"Inconrent password"})
+                return Response({"code":500,"errmsg":"Inconrent password"})
             userc=UserCharacters.objects.get(user=user)
             userc.news_categroy_Poi=''
             userc.news_history=''
@@ -252,7 +252,7 @@ class resetAPI(APIView):
             userc.save()
             return Response({'code':0,'errmsg':'ok'})
         except Exception as e:
-            return Response({"code":400,"errmsg":str(e)})
+            return Response({"code":500,"errmsg":str(e)})
 
 
 

@@ -51,22 +51,7 @@
     box-sizing: border-box;
     height: 100%;
 };
-::-webkit-scrollbar {
-    width: 10px;
-}
 
-::-webkit-scrollbar-thumb {
-    background: #ffffff; // 滑块颜色
-    border-radius: 5px; // 滑块圆角
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(245, 44, 242, 0.519);
-}
-::-webkit-scrollbar-track {
-    border-radius: 5px; // 轨道圆角
-    background-color: rgba(255,255,255,0.5) // 轨道颜色 
-}
 
 .login_not_required{
   height: 320px;
@@ -92,10 +77,8 @@
 }
 .login_required{
   height: 600px;
-  display: flex;
+  display: block;
   position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
   background-color: rgba(255,255,255,0.5);
 }
   </style>

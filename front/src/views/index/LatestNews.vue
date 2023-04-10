@@ -100,7 +100,7 @@
     height: 20%;
     display: inline-block;
     .column_title{
-        width: 20%;
+        width: 18%;
         height: 100%;
         text-align: center center;
         
