@@ -4,10 +4,14 @@
             <h1>个性化推荐</h1>
         </div>
         <div class="news_container">
-            <ul  class="infinite-list" v-infinite-scroll="load" style="overflow:auto">
-                <li v-for="(news,i) in personalize_news_list" :key="i" class="infinite-list-item">
-                    <span class="time">{{ news.time }}.</span><span class="news_box"><a :href="news.url">{{ news.title }}</a></span>
-                    <!-- <span class="time">{{ news.time }}.</span><span class="news_box"><a :href="news.url">{{ news.title }}</a></span> -->
+            <ul  class="news-list" >
+                <li  class="news-list-item">
+                    <span v-for="(news,i) in personalize_news_list1" :key="i" class="left">
+                        <span class="time">{{ news.time }}.</span><span class="news_box"><a :href="news.url">{{ news.title }}</a></span>
+                    </span>
+                    <span v-for="(news,i) in personalize_news_list2" :key="i" class="right">
+                        <span class="time">{{ news.time }}.</span><span class="news_box"><a :href="news.url">{{ news.title }}</a></span>
+                    </span>
                 </li>
             </ul>
         </div>
@@ -18,8 +22,10 @@
 export default {
     data(){
         return{
-            personalize_news_list:[],
+            personalize_news_list1:[],
+            personalize_news_list2:[],
             loading:true,
+            count:0,
         }
     },
     mounted(){
@@ -30,7 +36,10 @@ export default {
         .then(res=>{
             if(res.data.code==0){
                 this.loading=false;
-                this.personalize_news_list=res.data.personalize_news_list;
+                let len=res.data.personalize_news_list.length;
+                this.personalize_news_list1=res.data.personalize_news_list.slice(0,len/2);
+                this.personalize_news_list2=res.data.personalize_news_list.slice(len/2);
+                
             }else{
                 console.log(res.data.errmsg);
             }
@@ -40,24 +49,7 @@ export default {
         })
     },
     methods:{
-        load(){
-            this.loading=true;
-            let url='/news/personalizenews/';
-            this.axios.get(url,{
-                responseType:'json',
-            })
-            .then(res=>{
-                if(res.data.code==0){
-                    this.loading=false;
-                    this.personalize_news_list-res.data.personalize_news_list;
-                }else{
-                    console.log(res.data.errmsg);
-                }
-            })
-            .catch(err=>{
-                console.log(err);
-            })
-            }
+        
     },
 }
 </script>
@@ -93,8 +85,22 @@ export default {
     display: inline-block;
     overflow-x: hidden;
     overflow-y: auto;
+    .left{
+        height: 100%;
+        width: 50%;
+        display: inline-block;
+        margin-bottom: 1%;
+        text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+    }
+    .right{
+        height: 100%;
+        width: 50%;
+        display: inline-block;
+        margin-bottom: 1%;
+        text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+    }
 }
-.infinite-list{
+.news-list{
     display:block;
     ::after{
         content:'';
@@ -110,14 +116,6 @@ export default {
         
         ::before {
             content: "";
-            position: absolute;
-            top: 50%;
-            left: 0;
-            margin-top: -6px;
-            width: 15px;
-            height: 15px;
-            border-radius:25%;
-            background: rgba(245, 44, 242, 0.519)
         };
         .news_box:hover{
             padding-inline: 5px;
@@ -125,10 +123,17 @@ export default {
             border: 1px solid rgba(0, 255, 255, 0.5);
         };
         a{
+            
             line-height: 0px;
             text-decoration: none;
             color: #030303;
         }
     }
 };
+.time{
+    line-height: 0px;
+    text-align: left;
+    font-size: 8px;
+    display: inline;
+}
 </style>

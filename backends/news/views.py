@@ -1,3 +1,4 @@
+import pytz
 from utils.sprider.sprider import main,BASE_DIR
 from .models import News,Category,NewsCharacters
 from rest_framework.views import APIView
@@ -219,7 +220,7 @@ class HotNewsAPI(APIView):
     def get(self,request):
         try:
             hot_news=[]
-            newsc_list=NewsCharacters.objects.filter(news__create_time__gt=datetime.datetime.now()-datetime.timedelta(days=3,hours=8)).order_by('-visited','-news__create_time')[:20]
+            newsc_list=NewsCharacters.objects.filter(news__create_time__gt=datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))-datetime.timedelta(days=3)).order_by('-visited','-news__create_time')[:20]
             for newsc in newsc_list:
                 hot_news.append({
                     "title":newsc.news.title,
@@ -245,15 +246,14 @@ class PersonalizeNewsAPI(APIView):
         try:
             personalize_news_list=[]
             personalize_news_caches=get_redis_connection('personalize_news_caches')
-            personalize_news_caches.set(request.user.username,'')
             pushed_news_list=[]
             try:
                 if personalize_news_caches.get(request.user.username)=='nil' or personalize_news_caches.get(request.user.username)==None:
-                    personalize_news_caches.set(request.user.username,','.join(pushed_news_list)).set_expire(259200)
+                    personalize_news_caches.set(request.user.username,','.join(pushed_news_list),3600)
                 else:
                     pushed_news_list=personalize_news_caches.get(request.user.username).decode('utf-8').split(',')
             except:
-                personalize_news_caches.set(request.user.username,','.join(pushed_news_list)).set_expire(259200)
+                personalize_news_caches.set(request.user.username,','.join(pushed_news_list),3600)
             
             usercharacters=UserCharacters.objects.get(user=request.user)
             news_history_dict=json.loads(usercharacters.news_history)
@@ -262,36 +262,57 @@ class PersonalizeNewsAPI(APIView):
                 count=0
                 similar_users_dict=json.loads(usercharacters.similar_users)
                 for uid in similar_users_dict['similar']:
-                    
-                    similar_userc=UserCharacters.objects.get(user=uid)
-                    similar_user_news_history_dict=json.loads(similar_userc.news_history)
-                    for news_id in similar_user_news_history_dict:
-                        
-                        if count<8:
-                            if str(news_id) not in pushed_news_list and news_id not in news_history_dict:
-                                if News.objects.get(id=news_id).create_time >= datetime.datetime.now()-datetime.timedelta(days=3,hours=8):
-                                    pushed_news_list.append(str(news_id))
-                                    personalize_news_list.append(self.mySerializer(news=News.objects.get(id=news_id)))
-                                    count+=1
-                                    
-                        else:
-                            break
+                    if count<24:
+                        similar_userc=UserCharacters.objects.get(user=uid)
+                        similar_user_news_history_dict=json.loads(similar_userc.news_history)
+                        for news_id in similar_user_news_history_dict:
+                            
+                            if count<24:
+                                if str(news_id) not in pushed_news_list :
+                                    if News.objects.get(id=news_id).create_time >= datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))-datetime.timedelta(days=30):
+                                        pushed_news_list.append(str(news_id))
+                                        personalize_news_list.append(self.mySerializer(news=News.objects.get(id=news_id)))
+                                        count+=1
+                                        
+                            else:
+                                break
             except Exception as e:
                 print(e)
             #50%关键词推荐
             try:
                 count=0
                 news_keyword_list=usercharacters.news_history.split(',')
-                for a_newsc in NewsCharacters.objects.filter(news__create_time__gt=datetime.datetime.now()-datetime.timedelta(days=3,hours=8)).order_by('-create_time'):
-                    if count<10:
-                        if str(a_newsc.news.id) not in pushed_news_list and a_newsc.news.id not in news_history_dict:
+                for a_newsc in NewsCharacters.objects.filter(news__create_time__gt=datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))-datetime.timedelta(days=7)).order_by('-news__create_time'):
+                    if count<30:
+                        if str(a_newsc.news.id) not in pushed_news_list:
                             intersection=set(news_keyword_list).intersection(set(a_newsc.keywords.split(',')))
-                            if len(intersection) >=0:
+                            # print(len(intersection))
+                            # print(intersection)
+                            if len(intersection) >=1:
                                 pushed_news_list.append(str(a_newsc.news.id))
                                 personalize_news_list.append(self.mySerializer(news=a_newsc.news))
                                 count+=1
                     else:
                         break
+                if count<30:
+                   news_categroy_Poi=json.loads(usercharacters.news_categroy_Poi)
+                   leave=30-count
+                   for category_id in news_categroy_Poi.keys():
+                        count=0
+                        if count<int(leave*float(news_categroy_Poi[category_id]['percentage'])):
+                            for a_news in News.objects.filter(category=category_id,create_time__gt=datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))-datetime.timedelta(days=30)).order_by('-create_time'):
+                                if count<int(leave*float(news_categroy_Poi[category_id]['percentage'])):
+                                    if str(news_id) not in pushed_news_list :
+                                        count+=1
+                                        pushed_news_list.append(str(a_news.id))
+                                        personalize_news_list.append(self.mySerializer(news=a_news))
+                                else:
+                                    break
+                import random
+                if len(personalize_news_list)<54:
+                    for news_id in pushed_news_list:
+                        if random.randint(0,10)<4 and len(personalize_news_list)<54:
+                            personalize_news_list.append(self.mySerializer(news=News.objects.get(id=news_id)))
             except Exception as e:
                 print(e)
             #10%试探性推荐
@@ -299,17 +320,18 @@ class PersonalizeNewsAPI(APIView):
                 count=0
                 similar_users_dict=json.loads(usercharacters.similar_users)
                 for uid in similar_users_dict['differ']:
-                    differ_userc=UserCharacters.objects.get(user=uid)
-                    differ_user_news_history_dict=json.loads(differ_userc.news_history)
-                    for news_id in differ_user_news_history_dict:
-                        if count<2:
-                            if str(news_id) not in pushed_news_list and news_id not in news_history_dict:
-                                if News.objects.get(id=news_id).create_time >= datetime.datetime.now()-datetime.timedelta(days=3,hours=8):
-                                    pushed_news_list.append(str(news_id))
-                                    personalize_news_list.append(self.mySerializer(news=News.objects.get(id=news_id)))
-                                    count+=1
-                        else:
-                            break
+                    if count<6:
+                        differ_userc=UserCharacters.objects.get(user=uid)
+                        differ_user_news_history_dict=json.loads(differ_userc.news_history)
+                        for news_id in differ_user_news_history_dict:
+                            if count<6:
+                                if str(news_id) not in pushed_news_list and news_id not in news_history_dict:
+                                    if News.objects.get(id=news_id).create_time >= datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))-datetime.timedelta(days=30):
+                                        pushed_news_list.append(str(news_id))
+                                        personalize_news_list.append(self.mySerializer(news=News.objects.get(id=news_id)))
+                                        count+=1
+                            else:
+                                break
             except Exception as e:
                 print(e)
 
@@ -317,3 +339,5 @@ class PersonalizeNewsAPI(APIView):
             return Response({"code":0,"errmsg":'ok','personalize_news_list':personalize_news_list})
         except Exception as e:
             return Response({"code":500,"errmsg":str(e)})
+        
+

@@ -299,8 +299,15 @@ class UserPoiCalculate:
                     total_visited+=int(num_visited)
                 except Exception as e:
                     print(e)
+            total_grade=0
             for category in category_count.keys():
                 category_count[category]['grade']=int(10*(category_count[category]['count']/category_count[category]['total']))+int(90*(category_count[category]['count']/total_visited))
+                total_grade+=category_count[category]['grade']
+            try:
+                for category in category_count.keys():
+                    category_count[category]['percentage']='{:.2f}'.format(category_count[category]['grade']/total_grade)
+            except Exception as e:
+                print(e)
             self.usercharacters.news_categroy_Poi=json.dumps(category_count)
             self.usercharacters.save()
 
@@ -320,9 +327,8 @@ class UserPoiCalculate:
                 cosine_similarity=cosine_similarity_part1/(math.pow(cosine_similarity_part2,0.5)*math.pow(cosine_similarity_part3,0.5))
                 if cosine_similarity>0.6:
                     similar_users['similar'].append(str(a_usercharacters.user.uid))
-                elif cosine_similarity<-0.4:
+                elif cosine_similarity<0:
                     similar_users['differ'].append(str(a_usercharacters.user.uid))
-            print("kkkalsd")
             self.usercharacters.similar_users=json.dumps(similar_users)
             self.usercharacters.save()
         except Exception as e:
@@ -343,3 +349,4 @@ def calculate_usercharacters():
         except Exception as e:
             print('{},错误:{}'.format(user.username,str(e))) 
 
+# calculate_usercharacters()
