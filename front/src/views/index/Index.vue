@@ -12,8 +12,8 @@
               <HotNews></HotNews>
             </div>
           </div>
-          <div class="login_required">
-            <PersonalizeNews v-if="logined=='true'"></PersonalizeNews>
+          <div v-show="logined" class="login_required">
+            <PersonalizeNews v-show="logined"></PersonalizeNews>
           </div>
         </el-main>
     </el-container>

@@ -28,7 +28,7 @@ export default {
             count:0,
         }
     },
-    mounted(){
+    created(){
         let url='/news/personalizenews/';
         this.axios.get(url,{
             responseType:'json',
