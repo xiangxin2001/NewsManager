@@ -6,10 +6,11 @@ import random
 BASE_DIR = Path(__file__).resolve().parent
 DEBUG=False
 
-#定义爬虫类
+#进度条
 def progressbar(count:int,total:int,tips:str,barlen:str)->None:
     print('\r{}[{}]{}/{}'.format(tips,'*'*(count*barlen//total)+'-'*(barlen-count*barlen//total),count,total),end='')
 
+#爬虫类
 class Web_Sprider:
     def __init__(self,url:str,name:str,example:str,categroy:str,categroy_num_list:list) -> None:
         self.url,self.name,self.example,self.categroy_num_list = url,name,example,categroy_num_list

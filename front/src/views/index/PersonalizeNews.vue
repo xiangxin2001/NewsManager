@@ -1,7 +1,7 @@
 <template>
     <div v-loading="loading" element-loading-background="rgba(255, 255, 255, 0.3)" element-loading-text="正在加载中">
         <div class="column_title">
-            <h1>个性化推荐</h1>
+            <h1>您可能感兴趣的新闻</h1>
         </div>
         <div class="news_container">
             <ul  class="news-list" >

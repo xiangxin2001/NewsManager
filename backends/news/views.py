@@ -1,5 +1,5 @@
 import pytz
-from utils.sprider.sprider import main,BASE_DIR
+from utils.sprider.sprider import main,BASE_DIR,DEBUG
 from .models import News,Category,NewsCharacters
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,7 +9,6 @@ from user.models import UserCharacters,User
 # Create your views here.
 #爬取的新闻入库
 def Sprider_data_in():
-    DEBUG=False
     sp=main()
     sp.main()
     target_list={}
@@ -102,6 +101,7 @@ class News_detailAPI(APIView):
             print(e)
             return Response({"code":500,"errmsg":str(e)})
 
+#分类下的新闻列表API
 class News_categoryAPI(APIView):
     def get(self,request,category_id):
         category_id=int(category_id)
@@ -110,7 +110,7 @@ class News_categoryAPI(APIView):
             pagesize=int(request.GET.get('pagesize',15))
             news_list=News.objects.filter(category=category_id).order_by("-create_time")
             total=len(news_list)
-            news_list_list=[]
+            result_news_list=[]
             if total>1:
                 if total>=page*pagesize:
                     news_list=news_list[pagesize*(page-1):pagesize*page]
@@ -125,12 +125,12 @@ class News_categoryAPI(APIView):
                         "url":"/detail/{}".format(news.id),
                         "time":timestr
                     }
-                    news_list_list.append(news_info)
+                    result_news_list.append(news_info)
                 bread={"首页":"/",str(Category.objects.get(id=category_id).name):"/category/{}".format(category_id),
                        "第{}页".format(page):"/category/{}?page={}&pagesize={}".format(category_id,page,pagesize)}
-                return Response({"code":0,"errmsg":"ok","total":total,"news_list":news_list_list, "breadcrumb":bread})
+                return Response({"code":0,"errmsg":"ok","total":total,"news_list":result_news_list, "breadcrumb":bread})
             else:
-                return Response({"code":500,"errmsg":"categoryDoNotExist"})
+                return Response({"code":500,"errmsg":"categoryDoNotExist or pagesizeTooLarge or pagenumTooBig"})
         except Exception as e:
             return Response({"code":500,"errmsg":str(e)})
 
@@ -245,6 +245,7 @@ class PersonalizeNewsAPI(APIView):
     def get(self,request):
         try:
             personalize_news_list=[]
+            personalize_news_list_id=[]
             personalize_news_caches=get_redis_connection('personalize_news_caches')
             pushed_news_list=[]
             try:
@@ -272,6 +273,7 @@ class PersonalizeNewsAPI(APIView):
                                     if News.objects.get(id=news_id).create_time >= datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))-datetime.timedelta(days=30):
                                         pushed_news_list.append(str(news_id))
                                         personalize_news_list.append(self.mySerializer(news=News.objects.get(id=news_id)))
+                                        personalize_news_list_id.append(str(news_id))
                                         count+=1
                                         
                             else:
@@ -291,6 +293,7 @@ class PersonalizeNewsAPI(APIView):
                             if len(intersection) >=1:
                                 pushed_news_list.append(str(a_newsc.news.id))
                                 personalize_news_list.append(self.mySerializer(news=a_newsc.news))
+                                personalize_news_list_id.append(str(a_newsc.news.id))
                                 count+=1
                     else:
                         break
@@ -306,12 +309,13 @@ class PersonalizeNewsAPI(APIView):
                                         count+=1
                                         pushed_news_list.append(str(a_news.id))
                                         personalize_news_list.append(self.mySerializer(news=a_news))
+                                        personalize_news_list_id.append(str(a_news.id))
                                 else:
                                     break
                 import random
                 if len(personalize_news_list)<54:
                     for news_id in pushed_news_list:
-                        if random.randint(0,10)<4 and len(personalize_news_list)<54:
+                        if random.randint(0,10)<4 and len(personalize_news_list)<54 and news_id not in personalize_news_list_id:
                             personalize_news_list.append(self.mySerializer(news=News.objects.get(id=news_id)))
             except Exception as e:
                 print(e)

@@ -2,7 +2,7 @@
  <div v-loading="loading" element-loading-background="rgba(255, 255, 255, 0.3)" element-loading-text="正在加载中">
     <div class="category">
         <span class="column_title">
-            <h1>今日新闻</h1>
+            <h1>最新消息</h1>
         </span>
         <span class="category_menu">
             <el-menu
