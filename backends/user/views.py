@@ -327,7 +327,7 @@ class UserPoiCalculate:
                 cosine_similarity=cosine_similarity_part1/(math.pow(cosine_similarity_part2,0.5)*math.pow(cosine_similarity_part3,0.5))
                 if cosine_similarity>0.6:
                     similar_users['similar'].append(str(a_usercharacters.user.uid))
-                elif cosine_similarity<0:
+                elif cosine_similarity<0.2:
                     similar_users['differ'].append(str(a_usercharacters.user.uid))
             self.usercharacters.similar_users=json.dumps(similar_users)
             self.usercharacters.save()

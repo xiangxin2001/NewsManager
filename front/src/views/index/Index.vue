@@ -38,7 +38,7 @@
     },
     mounted(){
       this.logined=window.sessionStorage.getItem('logined');
-    }
+    },
   }
   </script  >
   

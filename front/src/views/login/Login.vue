@@ -5,7 +5,7 @@
       <el-header><myheader></myheader></el-header>
         <el-main style="height: 500px;">
             <span class="post">
-                <img class="image" src="../../../public/img/loginpost.gif"/>
+                <img class="image" src="../../../public/img/loginpost.png"/>
             </span>
 
             <span class="login_from">
@@ -41,14 +41,16 @@
   };
   
   .post{
-    display: flex;
-    float:left;
-    width:200px;
+    display: inline-flex;
+    position: relative;
+    margin-left: 5%;
+    margin-right: 5%;
     height: 400px;
     
   }
   .login_from{  
-  display:block;
+  display:inline-block;
+  position: relative;
   width:450px;
   height: auto;
   margin-left: auto;

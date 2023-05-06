@@ -1,10 +1,8 @@
 import requests
 import json
-import time
 from pathlib import Path
-import random
 BASE_DIR = Path(__file__).resolve().parent
-DEBUG=False
+DEBUG=True
 
 #进度条
 def progressbar(count:int,total:int,tips:str,barlen:str)->None:
@@ -126,7 +124,7 @@ class Web_Sprider:
                         print("解析成功！")
                 else:
                     if DEBUG:
-                        print("出错！请检查解析规则或数据")
+                        print("出错！请检查解析规则或数据{}\npassage:{}".format(news_detail["url"],passage))
                 if not DEBUG:
                     progressbar(count,len(self.categroy_list),'解析{}新闻详情页获取新闻详情'.format(self.name),30)
             count+=1

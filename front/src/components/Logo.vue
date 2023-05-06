@@ -20,5 +20,6 @@
     background-position: left top;
     align-items: top;
     display: inline-block;
+    
 }
 </style>

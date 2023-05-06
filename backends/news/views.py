@@ -5,14 +5,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 import pandas
 import datetime
+import json
 from user.models import UserCharacters,User
+from jieba import analyse
 # Create your views here.
 #爬取的新闻入库
 def Sprider_data_in():
     sp=main()
     sp.main()
     target_list={}
-    import json
+    
     with open(BASE_DIR/"target.json","r",encoding="utf-8") as f:
         target_list=json.load(f)
         target_list=target_list["target_list"]
@@ -177,17 +179,22 @@ class NewsSearchView(SearchView):
      
         return JsonResponse(result_json,safe=False)
      
-from jieba import analyse
+
 #已有新闻特征建模函数
 def NewsCharacterforowned():
     news_list=News.objects.all()
     for news in news_list:
-        if not NewsCharacters.objects.get(news=news):
+        try:
+            NewsCharacters.objects.get(news=news)
+            print('pass')
+        except:
+            
             news_str=news.title+news.passage
             news_str=news_str.replace(r'<(\S*?)[^>]*>.*?|<.*? />','')
             keyword_list=analyse.extract_tags(news_str,topK=20, withWeight=False, allowPOS=('n','v','nr','a','ns','s','nt','ORG','PER','LOC','nw'))
             keywords=','.join(keyword_list)
             NewsCharacters.objects.create(news=news,keywords=keywords)
+
 
 #获取最新新闻
 class LatestNewsAPI(APIView):
@@ -230,7 +237,7 @@ class HotNewsAPI(APIView):
         except Exception as e:
             return Response({"code":500,"errmsg":str(e)})
 
-#个性化推荐(一次20条)
+#个性化推荐
 from django_redis import get_redis_connection
 class PersonalizeNewsAPI(APIView):
     def mySerializer(self,news)->dict:
@@ -340,8 +347,22 @@ class PersonalizeNewsAPI(APIView):
                 print(e)
 
             personalize_news_caches.set(request.user.username,','.join(pushed_news_list))
+            personalize_news_list=sorted(personalize_news_list,key=lambda x:x['time'],reverse=True)
             return Response({"code":0,"errmsg":'ok','personalize_news_list':personalize_news_list})
         except Exception as e:
-            return Response({"code":500,"errmsg":str(e)})
+            if str(e)=="the JSON object must be str, bytes or bytearray, not NoneType":
+                personalize_news_list=[]
+                count=0
+                try:
+                    for a_newsc in NewsCharacters.objects.filter(news__create_time__gt=datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))-datetime.timedelta(days=7)).order_by('-visited'):
+                        if count<=40:
+                            personalize_news_list.append(self.mySerializer(news=a_newsc.news))
+                            count+=1
+                except Exception as e:
+                    print(e)
+                return Response({"code":0,"errmsg":'ok','personalize_news_list':personalize_news_list})
+            
+            else:    
+                return Response({"code":500,"errmsg":str(e)})
         
 
